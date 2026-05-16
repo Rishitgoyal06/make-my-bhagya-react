@@ -45,3 +45,20 @@
 
 /* ─── Transition duration 400 ─────────────────────────────────────────────── */
 .duration-400 { transition-duration: 400ms; }
+
+/* ─── Service carousel ────────────────────────────────────────────────────── */
+@keyframes carousel-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-1 * var(--carousel-total) / 3)); }
+}
+
+.carousel-track {
+  animation: carousel-scroll 32s linear infinite;
+  will-change: transform;
+}
+
+/* Pause on hover anywhere inside the carousel wrapper */
+.carousel-track:hover,
+.carousel-track:has(:hover) {
+  animation-play-state: paused;
+}
