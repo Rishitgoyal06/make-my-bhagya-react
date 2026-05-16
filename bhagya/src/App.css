@@ -62,3 +62,14 @@
 .carousel-track:has(:hover) {
   animation-play-state: paused;
 }
+
+/* ─── Service card CTA hover ─────────────────────────────────────────────── */
+.service-card-cta:hover {
+  background: linear-gradient(180deg, #f2ca50, #d4af37) !important;
+  color: #2a1f00 !important;
+  border-color: transparent !important;
+}
+
+.service-card-cta:hover svg {
+  color: #2a1f00 !important;
+}

@@ -660,8 +660,9 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           {/* ── CTA ── */}
           <button
             onClick={() => setModalOpen(true)}
-            className={`group/btn inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.04] py-3 text-[11px] font-bold uppercase tracking-[0.26em] text-[#D4AF37] transition-all duration-250 hover:-translate-y-0.5 hover:border-transparent hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] ${fixedHeight ? 'mt-4' : 'mt-5'}`}
+            className={`service-card-cta group/btn inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.04] py-3 text-[11px] font-bold uppercase tracking-[0.26em] transition-all duration-250 hover:-translate-y-0.5 hover:border-transparent hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] ${fixedHeight ? 'mt-4' : 'mt-5'}`}
             style={{
+              color: '#D4AF37',
               boxShadow: `inset 0 0 0 1px ${accentColor}`,
             }}
           >
