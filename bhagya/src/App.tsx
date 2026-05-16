@@ -841,10 +841,11 @@ function App() {
           <div className="flex items-center gap-3">
             <a
               href="#cta"
-              className="hidden lg:inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#3c2f00] transition-all duration-300 hover:shadow-[0_0_24px_rgba(212,175,55,0.4)] hover:-translate-y-0.5"
+              className="hidden lg:inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] transition-all duration-300 hover:shadow-[0_0_24px_rgba(212,175,55,0.4)] hover:-translate-y-0.5"
+              style={{ color: '#2a1f00' }}
             >
               Book Session
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-3 w-3" style={{ color: '#2a1f00' }} />
             </a>
             <button
               onClick={() => setMobileOpen(v => !v)}
@@ -1264,10 +1265,11 @@ function App() {
               <div className="flex flex-col gap-4 sm:flex-row xl:flex-col xl:min-w-[220px]">
                 <a
                   href="#featured"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-8 py-4 text-[12px] font-bold uppercase tracking-[0.18em] text-[#3c2f00] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(212,175,55,0.4)]"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-8 py-4 text-[12px] font-bold uppercase tracking-[0.18em] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(212,175,55,0.4)]"
+                  style={{ color: '#2a1f00' }}
                 >
                   Start With Featured
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-3.5 w-3.5" style={{ color: '#2a1f00' }} />
                 </a>
                 <a
                   href="#vastu"
