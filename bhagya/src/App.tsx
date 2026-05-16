@@ -595,7 +595,7 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
     <>
       {modalOpen && <BookingModal service={service} onClose={() => setModalOpen(false)} />}
 
-      <article className={`group relative flex w-full shrink-0 flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] transition-all duration-350 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.3)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)] ${fixedHeight ? 'h-[380px] max-w-[352px]' : 'h-full min-h-[360px]'}`}
+      <article className={`group relative flex w-full shrink-0 flex-col overflow-hidden rounded-[1.5rem] border border-white/[0.08] transition-all duration-350 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.3)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)] ${fixedHeight ? 'h-[500px] max-w-[400px]' : 'h-full min-h-[440px]'}`}
         style={{ background: 'linear-gradient(160deg, rgba(14,15,35,0.95) 0%, rgba(8,9,22,0.98) 100%)' }}
       >
         {/* Ambient corner glow — always subtle, brighter on hover */}
@@ -610,7 +610,7 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           style={{ background: `linear-gradient(90deg, transparent 0%, ${accentColor} 50%, transparent 100%)` }}
         />
 
-        <div className="relative z-10 flex h-full flex-col p-5">
+        <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
 
           <div className="mb-3 flex items-center justify-between gap-4">
             <span className="pointer-events-none select-none font-display text-[1.9rem] font-bold leading-none text-white/[0.08] [text-shadow:0_0_16px_rgba(255,255,255,0.02)]">
@@ -634,22 +634,22 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           </div>
 
           {/* ── Title ── */}
-          <h3 className="mt-3 min-h-[2.7rem] font-display text-[1.18rem] font-bold leading-[1.3] text-white line-clamp-2">
+          <h3 className="mt-4 font-display text-[1.2rem] font-bold leading-[1.3] text-white line-clamp-2">
             {service.title}
           </h3>
 
           {/* ── Thin gold rule ── */}
-          <div className="my-2 h-px shrink-0" style={{ background: `linear-gradient(90deg, ${accentColor}60, transparent)` }} />
+          <div className="my-3 h-px shrink-0" style={{ background: `linear-gradient(90deg, ${accentColor}60, transparent)` }} />
 
           {/* ── Summary ── */}
-          <p className="min-h-[2.3rem] text-[0.84rem] leading-[1.55] text-white/48 line-clamp-2 shrink-0">{service.summary}</p>
+          <p className="text-[0.87rem] leading-[1.6] text-white/55 line-clamp-2 shrink-0">{service.summary}</p>
 
           {/* ── Bullets ── */}
-          <ul className={`mt-2.5 rounded-[1rem] border border-white/6 bg-[rgba(255,255,255,0.02)] p-3 ${fixedHeight ? 'flex-1 overflow-hidden' : 'flex-1'} flex flex-col gap-2`}>
+          <ul className={`mt-4 rounded-[1.1rem] border border-white/6 bg-[rgba(255,255,255,0.02)] p-4 ${fixedHeight ? 'flex-1 overflow-hidden' : 'flex-1'} flex flex-col gap-3`}>
             {service.bullets.slice(0, 3).map((bullet) => (
-              <li key={bullet} className="flex items-start gap-2.5 text-[0.79rem] leading-snug text-white/58">
+              <li key={bullet} className="flex items-start gap-3 text-[0.82rem] leading-snug text-white/60">
                 <span
-                  className="mt-[4px] h-[5px] w-[5px] shrink-0 rounded-full"
+                  className="mt-[5px] h-[5px] w-[5px] shrink-0 rounded-full"
                   style={{ background: accentColor, boxShadow: `0 0 6px ${accentColor}` }}
                 />
                 <span className="line-clamp-2">{bullet}</span>
@@ -660,7 +660,7 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           {/* ── CTA ── */}
           <button
             onClick={() => setModalOpen(true)}
-            className={`group/btn inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.04] py-2.5 text-[10px] font-bold uppercase tracking-[0.26em] text-[#D4AF37] transition-all duration-250 hover:-translate-y-0.5 hover:border-transparent hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:text-[#3c2f00] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] ${fixedHeight ? 'mt-3' : 'mt-4'}`}
+            className={`group/btn inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.04] py-3 text-[11px] font-bold uppercase tracking-[0.26em] text-[#D4AF37] transition-all duration-250 hover:-translate-y-0.5 hover:border-transparent hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] ${fixedHeight ? 'mt-4' : 'mt-5'}`}
             style={{
               boxShadow: `inset 0 0 0 1px ${accentColor}`,
             }}
@@ -676,7 +676,7 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
 
 /* ─── Auto-scroll carousel (used when services.length > 3) ─────────────── */
 function ServiceCarousel({ services, accentColor }: { services: Service[]; accentColor?: string }) {
-  const cardW = 372
+  const cardW = 420
   const totalW = services.length * cardW
   const pixelsPerSecond = 80
   const duration = `${Math.max(totalW / pixelsPerSecond, 18)}s`
@@ -687,7 +687,7 @@ function ServiceCarousel({ services, accentColor }: { services: Service[]; accen
       <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-[linear-gradient(270deg,#050505,transparent)] md:w-24" />
 
       <div
-        className="carousel-track flex w-max gap-5"
+        className="carousel-track flex w-max gap-7"
         style={{
           '--carousel-total': `${totalW}px`,
           '--carousel-duration': duration,
