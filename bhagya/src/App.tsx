@@ -987,15 +987,15 @@ function App() {
               >
                 <a
                   href="#featured"
-                  className="group relative overflow-hidden inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-8 py-4 text-[12px] font-bold uppercase tracking-[0.18em] text-[#3c2f00] transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(212,175,55,0.45)]"
+                  className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-8 py-4 text-[12px] font-bold uppercase tracking-[0.18em] shadow-[0_4px_24px_rgba(212,175,55,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(212,175,55,0.55)]"
+                  style={{ color: '#2a1f00' }}
                 >
-                  <span className="relative z-10">Explore Services</span>
-                  <ArrowRight className="relative z-10 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-white/15 translate-y-full transition-transform duration-400 group-hover:translate-y-0" />
+                  Explore Services
+                  <ArrowRight className="h-3.5 w-3.5" style={{ color: '#2a1f00' }} />
                 </a>
                 <a
                   href="#cta"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/5 px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-xl transition-all duration-400 hover:border-[rgba(212,175,55,0.4)] hover:bg-[rgba(212,175,55,0.07)] hover:-translate-y-1"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/8 px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-xl transition-all duration-300 hover:border-[rgba(212,175,55,0.5)] hover:bg-[rgba(212,175,55,0.1)] hover:text-[#D4AF37] hover:-translate-y-1"
                 >
                   Book a Session
                 </a>
