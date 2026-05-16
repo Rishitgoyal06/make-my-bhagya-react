@@ -1299,9 +1299,9 @@ function App() {
                 Professional Vastu, Tarot and Numerology consultation services. Every service is listed with clear pricing and a focused summary so you can choose the right guidance easily.
               </p>
               <div className="mt-6 flex flex-col gap-2.5">
-                <a href="tel:+91" className="inline-flex items-center gap-3 text-sm text-white/45 hover:text-[#D4AF37] transition-colors duration-200">
+                <a href="tel:+919662235593" className="inline-flex items-center gap-3 text-sm text-white/45 hover:text-[#D4AF37] transition-colors duration-200">
                   <Phone className="h-3.5 w-3.5 shrink-0 text-[#D4AF37]/50" />
-                  +91 — Contact for appointment
+                  +91 96622 35593
                 </a>
                 <a href="mailto:info@makemybhagya.com" className="inline-flex items-center gap-3 text-sm text-white/45 hover:text-[#D4AF37] transition-colors duration-200">
                   <Mail className="h-3.5 w-3.5 shrink-0 text-[#D4AF37]/50" />
@@ -1309,7 +1309,7 @@ function App() {
                 </a>
                 <span className="inline-flex items-center gap-3 text-sm text-white/45">
                   <MapPin className="h-3.5 w-3.5 shrink-0 text-[#D4AF37]/50" />
-                  India — Online &amp; On-site visits available
+                  Ahmedabad, Gujarat
                 </span>
               </div>
             </div>
