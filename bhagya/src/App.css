@@ -1,94 +1,60 @@
+/* ─── Keyframe Animations ─────────────────────────────────────────────────── */
+
 @keyframes aurora-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(1.5rem, -2rem, 0) scale(1.06);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%       { transform: translate3d(1.5rem, -2rem, 0) scale(1.06); }
 }
 
 @keyframes aurora-drift-delayed {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(-2rem, 1.5rem, 0) scale(1.04);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%       { transform: translate3d(-2rem, 1.5rem, 0) scale(1.04); }
 }
 
 @keyframes orbital-spin {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 @keyframes orbital-spin-reverse {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(-360deg);
-  }
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
 }
 
 @keyframes twinkle {
-  0%,
-  100% {
-    box-shadow: 0 0 0 rgba(212, 175, 55, 0);
-    opacity: 0.9;
-  }
-  50% {
-    box-shadow: 0 0 28px rgba(212, 175, 55, 0.22);
-    opacity: 1;
-  }
+  0%, 100% { box-shadow: 0 0 0 rgba(212, 175, 55, 0); opacity: 0.9; }
+  50%       { box-shadow: 0 0 28px rgba(212, 175, 55, 0.22); opacity: 1; }
 }
 
 @keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
-.aurora-drift {
-  animation: aurora-drift 16s ease-in-out infinite;
+@keyframes scroll-caret {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%       { transform: translateY(60%); opacity: 0.3; }
 }
 
-.aurora-drift-delayed {
-  animation: aurora-drift-delayed 20s ease-in-out infinite;
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.aurora-drift-slow {
-  animation: aurora-drift 26s ease-in-out infinite;
-}
+/* ─── Animation Utility Classes ──────────────────────────────────────────── */
 
-.hero-ring {
-  animation: orbital-spin 110s linear infinite;
-}
+.aurora-drift         { animation: aurora-drift 16s ease-in-out infinite; }
+.aurora-drift-delayed { animation: aurora-drift-delayed 20s ease-in-out infinite; }
+.aurora-drift-slow    { animation: aurora-drift 26s ease-in-out infinite; }
 
-.hero-ring-reverse {
-  animation: orbital-spin-reverse 90s linear infinite;
-}
+.hero-ring         { animation: orbital-spin 110s linear infinite; }
+.hero-ring-reverse { animation: orbital-spin-reverse 90s linear infinite; }
+.hero-dotted       { animation: orbital-spin 180s linear infinite; }
 
-.hero-dotted {
-  animation: orbital-spin 180s linear infinite;
-}
+.service-orbit         { animation: orbital-spin 110s linear infinite; }
+.service-orbit-reverse { animation: orbital-spin-reverse 90s linear infinite; }
 
-.twinkle {
-  animation: twinkle 4s ease-in-out infinite;
-}
+.twinkle       { animation: twinkle 4s ease-in-out infinite; }
+.scroll-caret  { animation: scroll-caret 2s ease-in-out infinite; }
 
-.marquee-shell {
-  overflow: hidden;
-}
-
-.marquee-track {
-  animation: marquee 26s linear infinite;
-}
+.marquee-shell { overflow: hidden; }
+.marquee-track { animation: marquee 26s linear infinite; }
