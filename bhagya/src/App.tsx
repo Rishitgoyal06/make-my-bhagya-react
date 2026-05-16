@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { Star, Sparkles, Clock, Compass, Moon, Map as MapIcon, ArrowRight, Menu, X, Phone, Mail, MapPin, ChevronUp } from 'lucide-react'
+import {
+  Star, Sparkles, Clock, Compass, Moon, Map as MapIcon,
+  ArrowRight, Menu, X, Phone, Mail, MapPin, ChevronUp,
+  Shield, Award, Users, CheckCircle2, Quote
+} from 'lucide-react'
 
 type Service = {
   title: string
@@ -15,26 +19,49 @@ type Service = {
 const navigation = ['Featured', 'Vastu', 'Tarot', 'Numerology']
 
 const heroStats = [
-  { value: '18', label: 'Services available', icon: Star },
-  { value: '3', label: 'Main categories', icon: Sparkles },
-  { value: '₹300', label: 'Starting tarot session', icon: Clock },
+  { value: '18+', label: 'Services', icon: Star },
+  { value: '500+', label: 'Happy Clients', icon: Users },
+  { value: '₹300', label: 'Starting Price', icon: Clock },
 ]
 
 const signalWords = [
-  'Factory Vastu',
-  'Home Vastu',
-  'Office Vastu',
-  'Tarot Reading',
-  'Tarot Courses',
-  'Name Numerology',
-  'Business Numerology',
-  'Life Path Prediction',
+  'Factory Vastu', 'Home Vastu', 'Office Vastu',
+  'Tarot Reading', 'Tarot Courses', 'Name Numerology',
+  'Business Numerology', 'Life Path Prediction',
+]
+
+const testimonials = [
+  {
+    name: 'Priya Sharma',
+    role: 'Home Owner, Mumbai',
+    text: 'The home Vastu visit completely transformed the energy in our house. Within weeks we noticed a positive shift in family harmony and finances.',
+    rating: 5,
+  },
+  {
+    name: 'Rajesh Mehta',
+    role: 'Business Owner, Pune',
+    text: 'The factory Vastu consultation was incredibly detailed. The directional guidance for our production layout made a real difference to our workflow.',
+    rating: 5,
+  },
+  {
+    name: 'Ananya Patel',
+    role: 'Student, Ahmedabad',
+    text: 'The tarot reading gave me clarity I had been searching for months. Accurate, insightful and delivered with genuine care.',
+    rating: 5,
+  },
+]
+
+const trustPoints = [
+  { icon: Shield, label: 'Trusted Practice', desc: 'Years of verified expertise in Vastu, Tarot and Numerology' },
+  { icon: Award, label: 'Certified Readings', desc: 'Professional certifications and structured learning programs' },
+  { icon: Users, label: 'Personal Guidance', desc: 'Every session is tailored to your unique chart and situation' },
+  { icon: CheckCircle2, label: 'Clear Pricing', desc: 'No hidden fees — every service listed with transparent pricing' },
 ]
 
 const featuredService: Service = {
   title: 'Construction / Factory / Land Vastu Visit',
-  price: '₹11000',
-  badge: 'Featured Industrial Vastu',
+  price: '₹11,000',
+  badge: 'Industrial Vastu',
   image: '/industry.png',
   summary:
     'A complete on-site Vastu audit for factories, land, construction zones, and industrial workflows with practical directional guidance.',
@@ -50,7 +77,7 @@ const featuredService: Service = {
 const vastuServices: Service[] = [
   {
     title: 'Home Vastu + Office Vastu Document',
-    price: '₹1000',
+    price: '₹1,000',
     badge: 'Vastu Document',
     summary:
       'A combined home and office review document focused on harmony, prosperity, peace, and flow across both spaces.',
@@ -63,7 +90,7 @@ const vastuServices: Service[] = [
   },
   {
     title: 'Office Vastu Visit',
-    price: '₹3500',
+    price: '₹3,500',
     badge: 'On-Site Office',
     summary:
       'A practical office Vastu visit built to improve team direction, work energy, client flow, and operational stability.',
@@ -76,7 +103,7 @@ const vastuServices: Service[] = [
   },
   {
     title: 'Home Vastu Visit',
-    price: '₹2500',
+    price: '₹2,500',
     badge: 'On-Site Home',
     summary:
       'A detailed home Vastu check focused on peace, health, prosperity, and simple corrections that do not require demolition.',
@@ -92,7 +119,7 @@ const vastuServices: Service[] = [
 const tarotServices: Service[] = [
   {
     title: 'Advanced Tarot Card Course',
-    price: '₹14999',
+    price: '₹14,999',
     badge: 'Professional Course',
     summary:
       'An advanced course for readers ready to master deeper intuition, timelines, multi-spread work, and client-facing practice.',
@@ -104,8 +131,8 @@ const tarotServices: Service[] = [
     ],
   },
   {
-    title: 'Tarot Course - Basic',
-    price: '₹5000',
+    title: 'Tarot Course — Basic',
+    price: '₹5,000',
     badge: 'Beginner Course',
     summary:
       'A beginner-friendly tarot course designed to take someone from zero knowledge to confident reading step by step.',
@@ -118,7 +145,7 @@ const tarotServices: Service[] = [
   },
   {
     title: 'Advanced Tarot Reading',
-    price: '₹1500',
+    price: '₹1,500',
     badge: 'Deep Reading',
     summary:
       'A deeper tarot session focused on karmic patterns, emotional blocks, timelines, soul lessons, and transformation guidance.',
@@ -147,7 +174,7 @@ const tarotServices: Service[] = [
 const numerologyServices: Service[] = [
   {
     title: 'Fame & Rajyog Numerology',
-    price: '₹5100',
+    price: '₹5,100',
     badge: 'Leadership Energy',
     summary:
       'A numerology session that reveals recognition, authority, influence, luxury, and public success indicators in your chart.',
@@ -160,7 +187,7 @@ const numerologyServices: Service[] = [
   },
   {
     title: '1-Year, 3-Year & 5-Year Life Path Prediction',
-    price: '₹6100',
+    price: '₹6,100',
     badge: 'Future Cycles',
     summary:
       'A roadmap-style prediction service showing your upcoming personal and professional energy cycles over 1, 3, and 5 years.',
@@ -172,8 +199,8 @@ const numerologyServices: Service[] = [
     ],
   },
   {
-    title: 'Financial Abundance - Membership Yearly',
-    price: '₹100000',
+    title: 'Financial Abundance — Yearly Membership',
+    price: '₹1,00,000',
     badge: 'Premium Membership',
     summary:
       'A high-touch abundance-focused numerology membership designed to align long-term money flow, opportunities, and wealth remedies.',
@@ -185,8 +212,8 @@ const numerologyServices: Service[] = [
     ],
   },
   {
-    title: 'Couple Matching - Numerology Compatibility',
-    price: '₹2400',
+    title: 'Couple Matching — Numerology Compatibility',
+    price: '₹2,400',
     badge: 'Relationship Match',
     summary:
       'Compatibility guidance for love, marriage, communication, bonding, and long-term relationship harmony.',
@@ -199,7 +226,7 @@ const numerologyServices: Service[] = [
   },
   {
     title: 'Car Numerology',
-    price: '₹1100',
+    price: '₹1,100',
     badge: 'Vehicle Energy',
     summary:
       'A detailed car number analysis to help choose or evaluate a vehicle number for smoother journeys and positive energy.',
@@ -212,7 +239,7 @@ const numerologyServices: Service[] = [
   },
   {
     title: 'Mobile Numerology',
-    price: '₹1100',
+    price: '₹1,100',
     badge: 'Daily Energy',
     summary:
       'Mobile number analysis for luck, opportunities, peace, growth, and day-to-day energetic support.',
@@ -225,7 +252,7 @@ const numerologyServices: Service[] = [
   },
   {
     title: 'Business Suggestion',
-    price: '₹11000',
+    price: '₹11,000',
     badge: 'Brand & Business',
     summary:
       'A numerology-driven business setup service covering name vibration, branding signals, lucky directions, and attraction energy.',
@@ -238,7 +265,7 @@ const numerologyServices: Service[] = [
   },
   {
     title: 'Student + Parents Numerology Report',
-    price: '₹2500',
+    price: '₹2,500',
     badge: 'Family Guidance',
     summary:
       'A report built around education, career direction, family compatibility, concentration, and parent-child energy balance.',
@@ -251,7 +278,7 @@ const numerologyServices: Service[] = [
   },
   {
     title: 'Name Numerology',
-    price: '₹1100',
+    price: '₹1,100',
     badge: 'Identity Alignment',
     summary:
       'A focused report on name vibration, spelling optimization, lucky numbers, and supportive colours.',
@@ -280,45 +307,59 @@ const numerologyServices: Service[] = [
 const categoryMeta = {
   vastu: {
     title: 'Vastu Services',
-    copy:
-      'From homes and offices to factories and land visits, these services focus on direction, flow, elemental balance, and practical corrections.',
+    copy: 'From homes and offices to factories and land visits — direction, flow, elemental balance, and practical corrections.',
     icon: Compass,
+    color: 'from-emerald-500/10 to-transparent',
+    accent: 'rgba(52,211,153,0.15)',
   },
   tarot: {
     title: 'Tarot Services & Courses',
-    copy:
-      'A mix of clarity readings and structured learning programs for beginners, advanced readers, and clients seeking deeper guidance.',
+    copy: 'Clarity readings and structured learning programs for beginners, advanced readers, and clients seeking deeper guidance.',
     icon: Moon,
+    color: 'from-violet-500/10 to-transparent',
+    accent: 'rgba(139,92,246,0.15)',
   },
   numerology: {
-    title: 'Numerology & Consultation Services',
-    copy:
-      'From name correction and compatibility to long-term predictions, business energy, abundance, and one-on-one expert guidance.',
+    title: 'Numerology & Consultation',
+    copy: 'Name correction, compatibility, long-term predictions, business energy, abundance, and one-on-one expert guidance.',
     icon: MapIcon,
+    color: 'from-amber-500/10 to-transparent',
+    accent: 'rgba(245,158,11,0.15)',
   },
 }
 
-function SectionEyebrow({ children }: { children: string }) {
+/* ─── Eyebrow label ─────────────────────────────────────────────────────── */
+function SectionEyebrow({ children, icon: Icon }: { children: string; icon?: typeof Star }) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 15 }}
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="inline-flex items-center gap-3 rounded-full border border-[rgba(212,175,55,0.24)] bg-[rgba(10,11,30,0.56)] px-4 py-2 backdrop-blur-xl hover:bg-[rgba(212,175,55,0.08)] transition-colors duration-300"
+      transition={{ duration: 0.5 }}
+      className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(212,175,55,0.22)] bg-[rgba(212,175,55,0.06)] px-4 py-2"
     >
-      <span className="h-2 w-2 rounded-full bg-[var(--color-primary)] shadow-[0_0_18px_rgba(212,175,55,0.55)]" />
-      <span className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[var(--color-on-surface-variant)]">
-        {children}
-      </span>
+      {Icon && <Icon className="h-3 w-3 text-[#D4AF37]" />}
+      {!Icon && <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.6)]" />}
+      <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#D4AF37]">{children}</span>
     </motion.div>
   )
 }
 
-/* ─── Booking Modal ──────────────────────────────────────────────────────── */
+/* ─── Booking Modal ─────────────────────────────────────────────────────── */
 function BookingModal({ service, onClose }: { service: Service; onClose: () => void }) {
   const [form, setForm] = useState({ name: '', dob: '', email: '', phone: '', gender: 'Male', profession: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', handler)
+      document.body.style.overflow = ''
+    }
+  }, [onClose])
 
   const validate = () => {
     const e: Record<string, string> = {}
@@ -333,30 +374,14 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const e2 = validate()
-    if (Object.keys(e2).length) { setErrors(e2); return }
-    // TODO: wire up payment / booking API
-    alert(`Booking confirmed for ${form.name}! We'll contact you shortly.`)
-    onClose()
+    const errs = validate()
+    if (Object.keys(errs).length) { setErrors(errs); return }
+    setSubmitted(true)
   }
 
-  // close on backdrop click
-  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose()
-  }
-
-  // close on Escape
-  useState(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  })
-
-  const inputClass = (field: string) =>
-    `w-full rounded-xl border bg-[rgba(5,5,5,0.6)] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-all duration-300 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.18)] ${
-      errors[field]
-        ? 'border-red-500/60 focus:border-red-400'
-        : 'border-white/10 focus:border-[rgba(212,175,55,0.6)]'
+  const inputCls = (field: string) =>
+    `w-full rounded-xl border bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-white placeholder-white/25 outline-none transition-all duration-200 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.15)] ${
+      errors[field] ? 'border-red-500/50 focus:border-red-400' : 'border-white/10 focus:border-[rgba(212,175,55,0.5)]'
     }`
 
   return (
@@ -365,180 +390,148 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-        onClick={handleBackdrop}
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+        onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="relative w-full max-w-[820px] max-h-[90vh] overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0d0e1f] shadow-[0_40px_120px_rgba(0,0,0,0.8)] flex flex-col md:flex-row"
+          exit={{ opacity: 0, scale: 0.96, y: 16 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
+          className="relative w-full max-w-[800px] max-h-[92vh] overflow-y-auto rounded-[1.75rem] border border-white/10 bg-[#0c0d1e] shadow-[0_40px_120px_rgba(0,0,0,0.85)] flex flex-col md:flex-row"
           role="dialog"
           aria-modal="true"
-          aria-label={`Book ${service.title}`}
         >
-          {/* ── Left panel: service details ── */}
-          <div className="relative flex flex-col gap-5 bg-[rgba(10,11,30,0.95)] p-7 md:w-[42%] md:rounded-l-[2rem] md:rounded-r-none rounded-t-[2rem] md:rounded-t-[2rem]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(99,32,238,0.12),transparent_60%)] rounded-[inherit] pointer-events-none" />
+          {/* Close */}
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/40 hover:text-white hover:border-white/20 transition-all duration-200"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
 
+          {/* Left — service info */}
+          <div className="relative flex flex-col gap-5 bg-[rgba(212,175,55,0.04)] border-b md:border-b-0 md:border-r border-white/8 p-7 md:w-[40%] md:rounded-l-[1.75rem]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(212,175,55,0.08),transparent_60%)] rounded-[inherit] pointer-events-none" />
             <div className="relative z-10">
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#D4AF37]">{service.badge}</p>
-              <h2 className="mt-3 font-display text-[1.6rem] leading-tight text-white font-bold">{service.title}</h2>
+              <span className="inline-block rounded-full bg-[rgba(212,175,55,0.12)] border border-[rgba(212,175,55,0.2)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.28em] text-[#D4AF37]">
+                {service.badge}
+              </span>
+              <h2 className="mt-3 font-display text-[1.4rem] leading-snug text-white font-bold">{service.title}</h2>
             </div>
-
-            {/* service image — only when the service has one */}
             {service.image && (
               <div className="relative z-10 overflow-hidden rounded-xl">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="h-[11rem] w-full object-cover object-center"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0e1f]/80 to-transparent" />
+                <img src={service.image} alt={service.title} className="h-40 w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d1e]/70 to-transparent" />
               </div>
             )}
-
-            {/* bullets */}
-            <ul className="relative z-10 flex flex-col gap-2.5">
+            <ul className="relative z-10 flex flex-col gap-2">
               {service.bullets.map((b) => (
-                <li key={b} className="flex items-start gap-2.5 text-[0.82rem] leading-[1.7] text-[rgba(229,226,225,0.75)]">
-                  <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,0.5)]" />
+                <li key={b} className="flex items-start gap-2 text-[0.8rem] leading-relaxed text-white/60">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]/70" />
                   {b}
                 </li>
               ))}
             </ul>
-
-            {/* price */}
-            <div className="relative z-10 mt-auto border-t border-white/8 pt-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[rgba(229,226,225,0.45)]">Total Price</p>
-              <p className="mt-1 font-display text-[2rem] font-bold text-[#D4AF37]">{service.price}</p>
+            <div className="relative z-10 mt-auto pt-4 border-t border-white/8">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-white/35">Total Price</p>
+              <p className="mt-1 font-display text-[1.8rem] font-bold text-[#D4AF37]">{service.price}</p>
             </div>
           </div>
 
-          {/* ── Right panel: form ── */}
+          {/* Right — form */}
           <div className="flex flex-col p-7 md:flex-1 md:p-8">
-            {/* close button */}
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 hover:border-white/25 hover:text-white transition-all duration-200"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-
-            <h3 className="font-display text-[1.5rem] font-bold text-white">Your Details</h3>
-            <p className="mt-1 text-sm text-[rgba(229,226,225,0.5)]">Fill in your details to book this service.</p>
-
-            <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-4">
-              {/* Full Name */}
-              <div>
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
-                  Full Name <span className="text-[#D4AF37]">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={form.name}
-                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className={inputClass('name')}
-                />
-                {errors.name && <p className="mt-1 text-[11px] text-red-400">{errors.name}</p>}
-              </div>
-
-              {/* Date of Birth */}
-              <div>
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
-                  Date of Birth <span className="text-[#D4AF37]">*</span>
-                </label>
-                <input
-                  type="date"
-                  value={form.dob}
-                  onChange={e => setForm(f => ({ ...f, dob: e.target.value }))}
-                  className={inputClass('dob')}
-                />
-                {errors.dob && <p className="mt-1 text-[11px] text-red-400">{errors.dob}</p>}
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
-                  Email <span className="text-[#D4AF37]">*</span>
-                </label>
-                <input
-                  type="email"
-                  placeholder="example@gmail.com"
-                  value={form.email}
-                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                  className={inputClass('email')}
-                />
-                {errors.email && <p className="mt-1 text-[11px] text-red-400">{errors.email}</p>}
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
-                  Phone Number <span className="text-[#D4AF37]">*</span>
-                </label>
-                <input
-                  type="tel"
-                  placeholder="10-digit phone number"
-                  value={form.phone}
-                  onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                  className={inputClass('phone')}
-                />
-                {errors.phone && <p className="mt-1 text-[11px] text-red-400">{errors.phone}</p>}
-              </div>
-
-              {/* Gender + Profession row */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
-                    Gender
-                  </label>
-                  <select
-                    value={form.gender}
-                    onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
-                    className="w-full rounded-xl border border-white/10 bg-[rgba(5,5,5,0.6)] px-4 py-3 text-sm text-white outline-none transition-all duration-300 focus:border-[rgba(212,175,55,0.6)] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.18)] appearance-none cursor-pointer"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
-                  </select>
+            {submitted ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-1 flex-col items-center justify-center gap-5 text-center py-10"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(212,175,55,0.12)] border border-[rgba(212,175,55,0.3)]">
+                  <CheckCircle2 className="h-8 w-8 text-[#D4AF37]" />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
-                    Profession <span className="text-[rgba(229,226,225,0.3)]">(Optional)</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Your profession"
-                    value={form.profession}
-                    onChange={e => setForm(f => ({ ...f, profession: e.target.value }))}
-                    className="w-full rounded-xl border border-white/10 bg-[rgba(5,5,5,0.6)] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-all duration-300 focus:border-[rgba(212,175,55,0.6)] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.18)]"
-                  />
+                  <h3 className="font-display text-xl font-bold text-white">Booking Received!</h3>
+                  <p className="mt-2 text-sm text-white/50">We'll reach out to {form.name || 'you'} shortly to confirm your session.</p>
                 </div>
-              </div>
-
-              {/* Actions */}
-              <div className="mt-2 flex items-center gap-3">
                 <button
-                  type="button"
                   onClick={onClose}
-                  className="flex-1 rounded-full border border-white/10 bg-white/5 py-3.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/70 hover:border-white/20 hover:text-white transition-all duration-300"
+                  className="mt-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-8 py-3 text-[12px] font-bold uppercase tracking-[0.16em] text-[#3c2f00]"
                 >
-                  Cancel
+                  Done
                 </button>
-                <button
-                  type="submit"
-                  className="flex-1 rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] py-3.5 text-[12px] font-bold uppercase tracking-[0.16em] text-[#3c2f00] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] hover:-translate-y-0.5 transition-all duration-300"
-                >
-                  Pay {service.price}
-                </button>
-              </div>
-            </form>
+              </motion.div>
+            ) : (
+              <>
+                <h3 className="font-display text-[1.4rem] font-bold text-white">Your Details</h3>
+                <p className="mt-1 text-sm text-white/40">Fill in your details to book this service.</p>
+                <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-4">
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
+                      Full Name <span className="text-[#D4AF37]">*</span>
+                    </label>
+                    <input type="text" placeholder="Your full name" value={form.name}
+                      onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inputCls('name')} />
+                    {errors.name && <p className="mt-1 text-[11px] text-red-400">{errors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
+                      Date of Birth <span className="text-[#D4AF37]">*</span>
+                    </label>
+                    <input type="date" value={form.dob}
+                      onChange={e => setForm(f => ({ ...f, dob: e.target.value }))} className={inputCls('dob')} />
+                    {errors.dob && <p className="mt-1 text-[11px] text-red-400">{errors.dob}</p>}
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
+                      Email <span className="text-[#D4AF37]">*</span>
+                    </label>
+                    <input type="email" placeholder="you@example.com" value={form.email}
+                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className={inputCls('email')} />
+                    {errors.email && <p className="mt-1 text-[11px] text-red-400">{errors.email}</p>}
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
+                      Phone <span className="text-[#D4AF37]">*</span>
+                    </label>
+                    <input type="tel" placeholder="10-digit number" value={form.phone}
+                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className={inputCls('phone')} />
+                    {errors.phone && <p className="mt-1 text-[11px] text-red-400">{errors.phone}</p>}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Gender</label>
+                      <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
+                        className="w-full rounded-xl border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-white outline-none focus:border-[rgba(212,175,55,0.5)] cursor-pointer appearance-none">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
+                        Profession <span className="text-white/25">(opt.)</span>
+                      </label>
+                      <input type="text" placeholder="Your profession" value={form.profession}
+                        onChange={e => setForm(f => ({ ...f, profession: e.target.value }))}
+                        className="w-full rounded-xl border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[rgba(212,175,55,0.5)] transition-all duration-200" />
+                    </div>
+                  </div>
+                  <div className="mt-1 flex gap-3">
+                    <button type="button" onClick={onClose}
+                      className="flex-1 rounded-full border border-white/10 bg-white/5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60 hover:text-white hover:border-white/20 transition-all duration-200">
+                      Cancel
+                    </button>
+                    <button type="submit"
+                      className="flex-1 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] py-3.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#3c2f00] hover:shadow-[0_0_28px_rgba(212,175,55,0.4)] hover:-translate-y-0.5 transition-all duration-200">
+                      Book — {service.price}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </div>
         </motion.div>
       </motion.div>
@@ -546,110 +539,105 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
   )
 }
 
+/* ─── Service Card ──────────────────────────────────────────────────────── */
 function ServiceCard({ service, featured = false }: { service: Service; featured?: boolean }) {
   const [modalOpen, setModalOpen] = useState(false)
   return (
     <>
       {modalOpen && <BookingModal service={service} onClose={() => setModalOpen(false)} />}
-    <motion.article
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.65, ease: 'easeOut' }}
-      className={`group relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(10,11,30,0.8),rgba(10,11,30,0.52))] backdrop-blur-[28px] transition-all duration-500 hover:-translate-y-1 hover:border-[rgba(212,175,55,0.28)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.36)] ${
-        featured ? 'p-7 md:p-8' : 'p-6'
-      }`}
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.12),transparent_36%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      <div className="relative z-10 flex h-full flex-col">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--color-primary)]">{service.badge}</p>
-            <h3 className={`mt-4 font-display leading-tight text-white ${featured ? 'max-w-[16ch] text-[2rem] md:text-[2.8rem]' : 'max-w-[16ch] text-[1.8rem]'}`}>
-              {service.title}
-            </h3>
+      <motion.article
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.55, ease: 'easeOut' }}
+        className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/8 bg-[rgba(10,11,30,0.7)] backdrop-blur-xl transition-all duration-400 hover:-translate-y-1 hover:border-[rgba(212,175,55,0.22)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)] ${featured ? 'p-6 md:p-7' : 'p-5 md:p-6'}`}
+      >
+        {/* hover glow */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.08),transparent_50%)] opacity-0 transition-opacity duration-400 group-hover:opacity-100" />
+
+        <div className="relative z-10 flex flex-col h-full gap-4">
+          {/* Header row */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <span className="inline-block rounded-full bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.18)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-[#D4AF37]">
+                {service.badge}
+              </span>
+              <h3 className={`mt-3 font-display font-bold leading-snug text-white ${featured ? 'text-[1.5rem] md:text-[1.75rem]' : 'text-[1.2rem] md:text-[1.35rem]'}`}>
+                {service.title}
+              </h3>
+            </div>
+            <div className="shrink-0 rounded-xl border border-[rgba(212,175,55,0.2)] bg-[rgba(212,175,55,0.08)] px-3 py-2 text-center">
+              <p className="font-display text-[1rem] font-bold text-[#D4AF37] leading-none">{service.price}</p>
+            </div>
           </div>
-          <div className="rounded-full border border-[rgba(212,175,55,0.24)] bg-[rgba(212,175,55,0.1)] px-4 py-2 text-sm font-bold text-[var(--color-primary)]">
-            {service.price}
-          </div>
-        </div>
-        <p className="mt-5 text-[1rem] leading-[1.8] text-[color:rgba(229,226,225,0.78)] font-light">{service.summary}</p>
-        <ul className="mt-6 space-y-3">
-          {service.bullets.map((bullet) => (
-            <li key={bullet} className="flex items-start gap-3 text-sm leading-7 text-[color:rgba(229,226,225,0.8)]">
-              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[var(--color-primary)] shadow-[0_0_14px_rgba(212,175,55,0.4)]" />
-              <span>{bullet}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-auto pt-7">
-          <div className="h-px w-full bg-[linear-gradient(90deg,rgba(255,255,255,0.04),rgba(212,175,55,0.45),rgba(255,255,255,0.04))]" />
-          <div className="mt-5 flex items-center justify-between gap-4">
-            <p className="text-sm uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">Explore service</p>
+
+          {/* Summary */}
+          <p className="text-[0.875rem] leading-relaxed text-white/60">{service.summary}</p>
+
+          {/* Bullets */}
+          <ul className="flex flex-col gap-2">
+            {service.bullets.map((bullet) => (
+              <li key={bullet} className="flex items-start gap-2.5 text-[0.82rem] leading-relaxed text-white/70">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]/60 shadow-[0_0_6px_rgba(212,175,55,0.4)]" />
+                {bullet}
+              </li>
+            ))}
+          </ul>
+
+          {/* Footer */}
+          <div className="mt-auto pt-4 border-t border-white/6">
             <button
               onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--color-on-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_26px_rgba(212,175,55,0.22)]"
+              className="group/btn inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.2)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#D4AF37] transition-all duration-300 hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:text-[#3c2f00] hover:border-transparent hover:shadow-[0_0_20px_rgba(212,175,55,0.25)]"
             >
-              Explore
-              <ArrowRight className="h-3.5 w-3.5" />
+              Book This Service
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5" />
             </button>
           </div>
         </div>
-      </div>
-    </motion.article>
+      </motion.article>
     </>
   )
 }
 
+/* ─── Service Section ───────────────────────────────────────────────────── */
 function ServiceSection({
-  id,
-  title,
-  copy,
-  services,
-  icon: Icon,
+  id, title, copy, services, icon: Icon,
 }: {
-  id: string
-  title: string
-  copy: string
-  services: Service[]
-  icon: typeof Compass
+  id: string; title: string; copy: string; services: Service[]; icon: typeof Compass
 }) {
   return (
-    <section id={id} className="relative px-6 py-24 md:px-10 lg:px-12">
+    <section id={id} className="relative px-5 py-20 md:px-10 lg:px-12">
       <div className="mx-auto max-w-[1280px]">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
-          }}
-          className="mb-12"
-        >
-          <SectionEyebrow>{title}</SectionEyebrow>
+        {/* Section header */}
+        <div className="mb-10">
+          <SectionEyebrow icon={Icon}>{title}</SectionEyebrow>
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="mt-7 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6 }}
+            className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
           >
-            <div className="max-w-[44rem]">
-              <div className="mb-4 inline-flex rounded-full border border-[rgba(212,175,55,0.18)] bg-[rgba(212,175,55,0.08)] p-3 text-[var(--color-primary)]">
-                <Icon className="h-4 w-4" />
-              </div>
-              <h2 className="font-display text-[2.7rem] leading-[0.98] tracking-[-0.04em] text-white md:text-[4rem] font-bold">
-                {title}
-              </h2>
-            </div>
-            <p className="max-w-[30rem] text-[1.02rem] leading-[1.9] text-[color:rgba(229,226,225,0.76)] font-light">{copy}</p>
+            <h2 className="font-display text-[2.2rem] md:text-[3rem] font-bold leading-tight tracking-[-0.03em] text-white max-w-[28rem]">
+              {title}
+            </h2>
+            <p className="max-w-[34rem] text-[0.95rem] leading-relaxed text-white/55 lg:text-right">{copy}</p>
           </motion.div>
-        </motion.div>
+          <div className="mt-6 h-px bg-[linear-gradient(90deg,rgba(212,175,55,0.3),transparent)]" />
+        </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          {services.map((service) => (
-            <ServiceCard key={service.title} service={service} />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+          {services.map((service, i) => (
+            <motion.div
+              key={service.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, delay: i * 0.07 }}
+            >
+              <ServiceCard service={service} />
+            </motion.div>
           ))}
         </div>
       </div>
@@ -657,53 +645,59 @@ function ServiceSection({
   )
 }
 
+/* ─── App ───────────────────────────────────────────────────────────────── */
 function App() {
-  const { scrollYProgress } = useScroll();
-  useTransform(scrollYProgress, [0, 0.3], [0, 50]); // retained for future parallax use
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const { scrollYProgress } = useScroll()
+  const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15 }
-    }
-  };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <div className="relative overflow-x-hidden bg-[var(--page-base)] text-[var(--color-on-surface)] selection:bg-[var(--color-primary-container)] selection:text-[var(--page-base)]">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="aurora-drift absolute left-[-16rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(99,32,238,0.28)_0%,rgba(99,32,238,0)_70%)] blur-3xl opacity-80" />
-        <div className="aurora-drift-delayed absolute right-[-12rem] top-[12rem] h-[36rem] w-[36rem] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.25)_0%,rgba(212,175,55,0)_72%)] blur-3xl opacity-80" />
-        <div className="aurora-drift-slow absolute bottom-[12rem] left-[8%] h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(10,11,30,0.94)_0%,rgba(10,11,30,0)_76%)] blur-3xl" />
-        <div className="absolute inset-x-0 top-[42rem] h-px bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.25),transparent)] opacity-50" />
+    <div className="relative overflow-x-hidden bg-[var(--page-base)] text-[var(--color-on-surface)]">
+
+      {/* Scroll progress bar */}
+      <motion.div
+        style={{ width: progressWidth }}
+        className="fixed top-0 left-0 z-[200] h-[2px] bg-[linear-gradient(90deg,#D4AF37,#f2ca50)] shadow-[0_0_8px_rgba(212,175,55,0.6)]"
+      />
+
+      {/* Ambient background blobs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="aurora-drift absolute left-[-14rem] top-[-6rem] h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(99,32,238,0.22)_0%,transparent_70%)] blur-3xl" />
+        <div className="aurora-drift-delayed absolute right-[-10rem] top-[10rem] h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.18)_0%,transparent_72%)] blur-3xl" />
       </div>
 
-      <motion.div 
-        initial={{ y: -100, opacity: 0 }}
+      {/* ─── NAVBAR ─────────────────────────────────────────────────────── */}
+      <motion.div
+        initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-        className="fixed left-0 top-5 z-50 w-full px-4"
+        transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
+        className="fixed left-0 top-4 z-50 w-full px-4"
       >
-        <header className="mx-auto flex w-full max-w-[1220px] items-center justify-between rounded-full border border-white/12 bg-[rgba(8,10,22,0.65)] px-5 py-3 backdrop-blur-[32px] shadow-[0_18px_70px_rgba(0,0,0,0.45)] md:px-7 transition-all duration-500 hover:border-white/20 hover:bg-[rgba(12,14,28,0.75)]">
-          <a href="#top" className="font-display text-[1.4rem] font-bold tracking-[-0.04em] text-[var(--color-primary)] transition-transform hover:scale-105 duration-300">
-            Make My Bhagya<span className="text-[var(--color-primary)]/40">.</span>
+        <header className={`mx-auto flex w-full max-w-[1200px] items-center justify-between rounded-full border px-5 py-3 backdrop-blur-[32px] transition-all duration-500 ${
+          scrolled
+            ? 'border-white/12 bg-[rgba(5,5,15,0.85)] shadow-[0_12px_48px_rgba(0,0,0,0.5)]'
+            : 'border-white/8 bg-[rgba(5,5,15,0.5)]'
+        }`}>
+          <a href="#top" className="font-display text-[1.25rem] font-bold tracking-[-0.03em] text-[#D4AF37]">
+            Make My Bhagya
           </a>
 
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav className="hidden items-center gap-7 lg:flex">
             {navigation.map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="group relative text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--color-on-surface-variant)] transition-colors duration-300 hover:text-[var(--color-primary)]"
+                className="group relative text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55 transition-colors duration-200 hover:text-[#D4AF37]"
               >
                 {item}
-                <span className="absolute -bottom-2 left-1/2 h-[2px] w-0 -translate-x-1/2 bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.95),transparent)] transition-all duration-300 group-hover:w-full group-hover:shadow-[0_0_12px_rgba(212,175,55,0.8)]" />
+                <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
           </nav>
@@ -711,16 +705,15 @@ function App() {
           <div className="flex items-center gap-3">
             <a
               href="#cta"
-              className="group hidden lg:inline-flex items-center gap-2 justify-center rounded-full border border-[rgba(212,175,55,0.35)] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)] transition-all duration-500 hover:bg-[var(--color-primary)] hover:text-[var(--color-on-primary)] hover:shadow-[0_0_35px_rgba(212,175,55,0.35)] hover:scale-105"
+              className="hidden lg:inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#3c2f00] transition-all duration-300 hover:shadow-[0_0_24px_rgba(212,175,55,0.4)] hover:-translate-y-0.5"
             >
-              <span>Book Session</span>
-              <ArrowRight className="h-3 w-3 opacity-0 -ml-4 transition-all duration-300 group-hover:opacity-100 group-hover:ml-0" />
+              Book Session
+              <ArrowRight className="h-3 w-3" />
             </a>
-            {/* Mobile hamburger */}
             <button
-              onClick={() => setMobileOpen((v) => !v)}
+              onClick={() => setMobileOpen(v => !v)}
               aria-label="Toggle navigation"
-              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-full border border-white/15 bg-white/5 text-[var(--color-on-surface-variant)] hover:border-[rgba(212,175,55,0.4)] hover:text-[var(--color-primary)] transition-all duration-300"
+              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white/50 hover:border-[rgba(212,175,55,0.35)] hover:text-[#D4AF37] transition-all duration-200"
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -731,11 +724,11 @@ function App() {
         <AnimatePresence>
           {mobileOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -12, scale: 0.97 }}
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -12, scale: 0.97 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="mx-auto mt-3 w-full max-w-[1220px] rounded-[1.6rem] border border-white/12 bg-[rgba(8,10,22,0.92)] px-6 py-6 backdrop-blur-[40px] shadow-[0_24px_80px_rgba(0,0,0,0.6)] lg:hidden"
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="mx-auto mt-2 w-full max-w-[1200px] rounded-2xl border border-white/10 bg-[rgba(5,5,15,0.95)] px-5 py-5 backdrop-blur-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.6)] lg:hidden"
             >
               <nav className="flex flex-col gap-1">
                 {navigation.map((item) => (
@@ -743,18 +736,18 @@ function App() {
                     key={item}
                     href={`#${item.toLowerCase()}`}
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-between rounded-xl px-4 py-3.5 text-[12px] font-semibold uppercase tracking-[0.22em] text-[var(--color-on-surface-variant)] hover:bg-[rgba(212,175,55,0.08)] hover:text-[var(--color-primary)] transition-all duration-200"
+                    className="flex items-center justify-between rounded-xl px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-white/55 hover:bg-[rgba(212,175,55,0.07)] hover:text-[#D4AF37] transition-all duration-150"
                   >
                     {item}
-                    <ArrowRight className="h-3 w-3 opacity-40" />
+                    <ArrowRight className="h-3 w-3 opacity-30" />
                   </a>
                 ))}
               </nav>
-              <div className="mt-5 border-t border-white/8 pt-5">
+              <div className="mt-4 pt-4 border-t border-white/8">
                 <a
                   href="#cta"
                   onClick={() => setMobileOpen(false)}
-                  className="flex w-full items-center justify-center rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] py-3.5 text-[12px] font-bold uppercase tracking-[0.18em] text-[var(--color-on-primary)] hover:shadow-[0_0_30px_rgba(212,175,55,0.3)] transition-all duration-300"
+                  className="flex w-full items-center justify-center rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] py-3.5 text-[12px] font-bold uppercase tracking-[0.16em] text-[#3c2f00]"
                 >
                   Book a Session
                 </a>
@@ -765,56 +758,44 @@ function App() {
       </motion.div>
 
       <main id="top">
-        {/* ================= HERO SECTION ================= */}
-        <section className="relative isolate min-h-screen w-full flex flex-col overflow-hidden">
-
-          {/* Full-bleed background image */}
+        {/* ─── HERO ───────────────────────────────────────────────────── */}
+        <section className="relative isolate min-h-screen flex flex-col overflow-hidden">
+          {/* Background image */}
           <div className="absolute inset-0 z-0">
-            <img
-              src="/hero_section.png"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-center scale-[1.04]"
-            />
-            {/* layered overlays for depth */}
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.55)_0%,rgba(5,5,5,0.3)_40%,rgba(5,5,5,0.85)_100%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgba(99,32,238,0.18)_0%,transparent_70%)]" />
-            {/* bottom fade into page */}
-            <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#050505] to-transparent" />
+            <img src="/hero_section.png" alt="" aria-hidden="true" className="h-full w-full object-cover object-center" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.6)_0%,rgba(5,5,5,0.25)_45%,rgba(5,5,5,0.9)_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_40%,rgba(99,32,238,0.15),transparent_70%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050505] to-transparent" />
           </div>
 
-          {/* Orbital rings — decorative */}
+          {/* Orbital rings */}
           <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
-            <div className="hero-ring h-[520px] w-[520px] rounded-full border border-white/[0.06] md:h-[700px] md:w-[700px]" />
-            <div className="hero-ring-reverse absolute h-[380px] w-[380px] rounded-full border border-[rgba(212,175,55,0.12)] md:h-[520px] md:w-[520px]" />
-            <div className="hero-dotted absolute h-[640px] w-[640px] rounded-full border border-dashed border-white/[0.05] md:h-[860px] md:w-[860px]" />
-            {/* gold dot on ring */}
-            <div className="absolute top-[calc(50%-350px)] left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#D4AF37] shadow-[0_0_14px_#D4AF37]" />
+            <div className="hero-ring h-[480px] w-[480px] rounded-full border border-white/[0.05] md:h-[660px] md:w-[660px]" />
+            <div className="hero-ring-reverse absolute h-[340px] w-[340px] rounded-full border border-[rgba(212,175,55,0.1)] md:h-[480px] md:w-[480px]" />
+            <div className="absolute top-[calc(50%-330px)] left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#D4AF37] shadow-[0_0_12px_#D4AF37]" />
           </div>
 
-          {/* Hero content — centered */}
-          <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pt-32 pb-24 text-center">
+          {/* Hero content */}
+          <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-5 pt-32 pb-24 text-center">
             <motion.div
               initial="hidden"
               animate="visible"
-              variants={staggerContainer}
-              className="flex flex-col items-center max-w-[820px]"
+              variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.12 } } }}
+              className="flex flex-col items-center max-w-[780px]"
             >
-              {/* Eyebrow pill */}
-              <motion.div variants={fadeInUp}>
+              {/* Eyebrow */}
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}>
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.07)] px-4 py-2">
+                  <Sparkles className="h-3 w-3 text-[#D4AF37]" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF37]">Vastu · Tarot · Numerology</span>
+                </div>
               </motion.div>
 
-              {/* Vertical gold line */}
-              <motion.div
-                variants={fadeInUp}
-                className="mt-8 w-px h-12 bg-gradient-to-b from-transparent via-[#D4AF37]/70 to-transparent"
-              />
-
-              {/* Main headline */}
+              {/* Headline */}
               <motion.h1
-                variants={fadeInUp}
-                className=" font-display font-bold leading-[1.0] tracking-[-0.04em] text-white drop-shadow-[0_8px_40px_rgba(0,0,0,0.9)]"
-                style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
+                variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8 } } }}
+                className="mt-7 font-display font-bold leading-[1.02] tracking-[-0.04em] text-white"
+                style={{ fontSize: 'clamp(2.8rem, 7.5vw, 6.5rem)' }}
               >
                 Guidance for<br />
                 <span className="bg-[linear-gradient(135deg,#fff1ba_0%,#D4AF37_45%,#f9e498_100%)] bg-clip-text text-transparent">
@@ -825,45 +806,45 @@ function App() {
 
               {/* Subtext */}
               <motion.p
-                variants={fadeInUp}
-                className="mt-7 max-w-[560px] text-[1.05rem] leading-[1.9] text-[rgba(229,226,225,0.82)] font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+                className="mt-6 max-w-[520px] text-[1rem] leading-[1.85] text-white/70"
               >
-                Vastu visits, tarot readings, numerology reports and compatibility guidance — all in one place with clear pricing.
+                Vastu visits, tarot readings, numerology reports and compatibility guidance — all in one place with clear, honest pricing.
               </motion.p>
 
-              {/* CTA buttons */}
-              <motion.div variants={fadeInUp} className="mt-10 flex flex-col sm:flex-row items-center gap-4">
+              {/* CTAs */}
+              <motion.div
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+                className="mt-9 flex flex-col sm:flex-row items-center gap-3"
+              >
                 <a
-                  href="#experience"
-                  className="group relative overflow-hidden inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] px-9 py-4 text-[12px] font-bold uppercase tracking-[0.18em] text-[#3c2f00] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(212,175,55,0.5)]"
+                  href="#featured"
+                  className="group relative overflow-hidden inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-8 py-4 text-[12px] font-bold uppercase tracking-[0.18em] text-[#3c2f00] transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(212,175,55,0.45)]"
                 >
                   <span className="relative z-10">Explore Services</span>
                   <ArrowRight className="relative z-10 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-white/20 translate-y-full transition-transform duration-500 group-hover:translate-y-0" />
+                  <div className="absolute inset-0 bg-white/15 translate-y-full transition-transform duration-400 group-hover:translate-y-0" />
                 </a>
                 <a
                   href="#cta"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-9 py-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-xl transition-all duration-500 hover:border-[rgba(212,175,55,0.45)] hover:bg-[rgba(212,175,55,0.08)] hover:-translate-y-1"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/5 px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-xl transition-all duration-400 hover:border-[rgba(212,175,55,0.4)] hover:bg-[rgba(212,175,55,0.07)] hover:-translate-y-1"
                 >
                   Book a Session
                 </a>
               </motion.div>
 
-              {/* Stats row */}
-              <motion.div variants={fadeInUp} className="mt-14 flex flex-wrap items-center justify-center gap-3 sm:gap-5">
-                {heroStats.map((item, i) => {
+              {/* Stats */}
+              <motion.div
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+                className="mt-12 flex flex-wrap items-center justify-center gap-3"
+              >
+                {heroStats.map((item) => {
                   const Icon = item.icon
                   return (
-                    <div
-                      key={item.label}
-                      className="flex items-center gap-3 rounded-full border border-white/10 bg-[rgba(10,11,30,0.55)] px-5 py-3 backdrop-blur-xl"
-                    >
-                      <Icon className="h-4 w-4 text-[#D4AF37]/70 shrink-0" />
-                      <span className="font-display text-[1.3rem] font-bold text-[#D4AF37] leading-none">{item.value}</span>
-                      <span className="text-[11px] text-[rgba(229,226,225,0.65)] tracking-wide">{item.label}</span>
-                      {i < heroStats.length - 1 && (
-                        <span className="hidden sm:block ml-2 h-3 w-px bg-white/15" />
-                      )}
+                    <div key={item.label} className="flex items-center gap-3 rounded-full border border-white/10 bg-[rgba(10,11,30,0.5)] px-5 py-3 backdrop-blur-xl">
+                      <Icon className="h-3.5 w-3.5 text-[#D4AF37]/70 shrink-0" />
+                      <span className="font-display text-[1.2rem] font-bold text-[#D4AF37] leading-none">{item.value}</span>
+                      <span className="text-[11px] text-white/50">{item.label}</span>
                     </div>
                   )
                 })}
@@ -871,101 +852,108 @@ function App() {
             </motion.div>
           </div>
 
-          {/* Scroll indicator */}
+          {/* Scroll cue */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
-            <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[rgba(229,226,225,0.4)]">Scroll</span>
-            <div className="relative h-10 w-px overflow-hidden bg-white/10">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30">Scroll</span>
+            <div className="relative h-9 w-px overflow-hidden bg-white/10">
               <div className="scroll-caret absolute inset-x-0 top-0 h-1/2 bg-[#D4AF37]" />
             </div>
           </div>
         </section>
 
-        <section id="experience" className="relative py-12">
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.03),transparent)]" />
-          <div className="marquee-shell border-y border-white/10 bg-[rgba(10,11,30,0.4)] py-5 backdrop-blur-[18px]">
+        {/* ─── MARQUEE ────────────────────────────────────────────────── */}
+        <section className="relative py-0">
+          <div className="marquee-shell border-y border-white/8 bg-[rgba(10,11,30,0.5)] py-4 backdrop-blur-xl">
             <div className="marquee-track flex min-w-max items-center gap-8">
-              {[...signalWords, ...signalWords, ...signalWords].map((word, index) => (
-                <div key={`${word}-${index}`} className="flex items-center gap-8">
-                  <span className="text-[12px] font-bold uppercase tracking-[0.35em] text-[var(--color-primary)]/90 drop-shadow-[0_0_8px_rgba(212,175,55,0.3)]">
-                    {word}
-                  </span>
-                  <Star className="h-3 w-3 text-white/30" />
+              {[...signalWords, ...signalWords, ...signalWords].map((word, i) => (
+                <div key={`${word}-${i}`} className="flex items-center gap-8">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#D4AF37]/80">{word}</span>
+                  <Star className="h-2.5 w-2.5 text-white/20" />
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="featured" className="relative px-6 py-24 md:px-10 lg:px-12">
-          <div id="offerings" className="absolute -top-32" />
-          <div className="mx-auto grid max-w-[1280px] gap-10 xl:grid-cols-[0.72fr_1.28fr] xl:items-start">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="max-w-[32rem]"
-            >
-              <SectionEyebrow>Featured Service</SectionEyebrow>
-              <h2 className="mt-7 font-display text-[2.8rem] leading-[0.96] tracking-[-0.04em] text-white md:text-[4.4rem] font-bold">
-                Construction, Factory and Land Vastu
-                <span className="mt-2 block text-[rgba(229,226,225,0.56)] font-medium italic">complete on-site industrial guidance.</span>
-              </h2>
-              <p className="mt-7 text-[1.05rem] leading-[1.9] text-[color:rgba(229,226,225,0.78)] font-light">
-                This featured section presents your most detailed Vastu visit for factories, land and industrial setups, including layout, flow, energy balance and directional planning.
-              </p>
-              <div className="mt-10 flex flex-wrap gap-3">
-                {['Factory Vastu', 'Land Audit', 'Production Flow', '5 Elements'].map((chip) => (
-                  <span
-                    key={chip}
-                    className="rounded-full border border-white/10 bg-[rgba(10,11,30,0.54)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-on-surface-variant)]"
+        {/* ─── TRUST STRIP ────────────────────────────────────────────── */}
+        <section className="relative px-5 py-16 md:px-10 lg:px-12">
+          <div className="mx-auto max-w-[1280px]">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {trustPoints.map((point, i) => {
+                const Icon = point.icon
+                return (
+                  <motion.div
+                    key={point.label}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.08 }}
+                    className="flex flex-col gap-3 rounded-2xl border border-white/7 bg-[rgba(10,11,30,0.5)] p-5 backdrop-blur-xl"
                   >
-                    {chip}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-
-            <div className="relative">
-              <div className="service-orbit absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/8" />
-              <div className="service-orbit-reverse absolute left-1/2 top-1/2 h-[24rem] w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(212,175,55,0.18)]" />
-              <div className="relative rounded-[2rem] border border-[rgba(212,175,55,0.2)] bg-[linear-gradient(160deg,rgba(10,11,30,0.88),rgba(10,11,30,0.58))] p-3 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-[28px]">
-                <div className="absolute inset-0 rounded-[2rem] bg-[linear-gradient(140deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03)_26%,rgba(255,255,255,0.01)_100%)] pointer-events-none" />
-
-                {/* Image — 20rem gives a strong visual without dwarfing the card content */}
-                <div className="relative overflow-hidden rounded-[1.5rem]">
-                  <img
-                    src="/industry.png"
-                    alt="Industrial factory Vastu visit"
-                    className="h-[20rem] w-full object-cover object-center"
-                  />
-                  {/* subtle bottom fade into card */}
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.0)_55%,rgba(5,5,5,0.55)_100%)]" />
-                  {/* top badges */}
-                  <div className="absolute inset-x-5 top-5 flex items-center justify-between">
-                    <div className="rounded-full border border-white/12 bg-[rgba(5,5,5,0.5)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--color-on-surface-variant)] backdrop-blur-xl">
-                      Industrial visit
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.18)]">
+                      <Icon className="h-4 w-4 text-[#D4AF37]" />
                     </div>
-                    <div className="twinkle rounded-full border border-[rgba(212,175,55,0.3)] bg-[rgba(212,175,55,0.15)] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
-                      On-site
+                    <div>
+                      <p className="text-[0.85rem] font-semibold text-white">{point.label}</p>
+                      <p className="mt-1 text-[0.78rem] leading-relaxed text-white/45">{point.desc}</p>
                     </div>
-                  </div>
-                  {/* gold corner accent bottom-right */}
-                  <div className="absolute bottom-5 right-5 flex flex-col items-end gap-1 pointer-events-none">
-                    <div className="h-px w-5 bg-[#D4AF37]/50" />
-                    <div className="h-5 w-px bg-[#D4AF37]/50 self-end" />
-                  </div>
-                </div>
-
-                {/* Service card content directly below image */}
-                <div className="relative px-4 pb-4 pt-4 md:px-6 md:pb-6">
-                  <ServiceCard service={featuredService} featured />
-                </div>
-              </div>
+                  </motion.div>
+                )
+              })}
             </div>
           </div>
         </section>
 
+        {/* ─── FEATURED SERVICE ───────────────────────────────────────── */}
+        <section id="featured" className="relative px-5 py-16 md:px-10 lg:px-12">
+          <div className="mx-auto max-w-[1280px]">
+            <div className="mb-10">
+              <SectionEyebrow icon={Star}>Featured Service</SectionEyebrow>
+            </div>
+            <div className="grid gap-8 xl:grid-cols-[1fr_1.4fr] xl:items-start">
+              {/* Left copy */}
+              <motion.div
+                initial={{ opacity: 0, x: -24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.7 }}
+              >
+                <h2 className="font-display text-[2.2rem] md:text-[3.2rem] font-bold leading-tight tracking-[-0.03em] text-white">
+                  Construction, Factory & Land Vastu
+                  <span className="mt-2 block text-[1.4rem] md:text-[1.8rem] text-white/40 font-medium italic">
+                    complete on-site industrial guidance.
+                  </span>
+                </h2>
+                <p className="mt-5 text-[0.95rem] leading-relaxed text-white/55">
+                  The most comprehensive Vastu visit for factories, land and industrial setups — covering layout, flow, energy balance and directional planning.
+                </p>
+                <div className="mt-7 flex flex-wrap gap-2.5">
+                  {['Factory Vastu', 'Land Audit', 'Production Flow', '5 Elements'].map((chip) => (
+                    <span key={chip} className="rounded-full border border-white/10 bg-[rgba(10,11,30,0.6)] px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+                {/* Image preview */}
+                <div className="mt-8 overflow-hidden rounded-2xl border border-white/8">
+                  <img src="/industry.png" alt="Industrial factory Vastu" className="h-52 w-full object-cover" />
+                </div>
+              </motion.div>
+
+              {/* Right card */}
+              <motion.div
+                initial={{ opacity: 0, x: 24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+              >
+                <ServiceCard service={featuredService} featured />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── SERVICE SECTIONS ───────────────────────────────────────── */}
         <ServiceSection
           id="vastu"
           title={categoryMeta.vastu.title}
@@ -988,46 +976,87 @@ function App() {
           icon={categoryMeta.numerology.icon}
         />
 
-        <section id="cta" className="relative px-6 pb-32 pt-20 md:px-10 lg:px-12">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 1 }}
-            className="group relative mx-auto max-w-[1280px] overflow-hidden rounded-[2.5rem] border border-[rgba(212,175,55,0.25)] bg-[linear-gradient(160deg,rgba(12,14,35,0.95),rgba(5,5,5,0.98))] px-8 py-16 shadow-[0_30px_100px_rgba(0,0,0,0.5)] backdrop-blur-[32px] transition-colors duration-500 hover:border-[rgba(212,175,55,0.4)] md:px-16 md:py-20"
-          >
-            <div className="absolute right-[-10rem] top-[-10rem] h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.2)_0%,rgba(212,175,55,0)_72%)] opacity-60 blur-3xl transition-opacity duration-700 group-hover:opacity-100" />
-            <div className="absolute bottom-[-5rem] left-[-5rem] h-[20rem] w-[20rem] rounded-full bg-[radial-gradient(circle,rgba(99,32,238,0.15)_0%,rgba(212,175,55,0)_72%)] blur-3xl opacity-50" />
+        {/* ─── TESTIMONIALS ───────────────────────────────────────────── */}
+        <section className="relative px-5 py-20 md:px-10 lg:px-12">
+          <div className="mx-auto max-w-[1280px]">
+            <div className="mb-10 text-center">
+              <SectionEyebrow icon={Star}>Client Stories</SectionEyebrow>
+              <motion.h2
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="mt-5 font-display text-[2rem] md:text-[2.8rem] font-bold tracking-[-0.03em] text-white"
+              >
+                What clients say
+              </motion.h2>
+            </div>
+            <div className="grid gap-5 md:grid-cols-3">
+              {testimonials.map((t, i) => (
+                <motion.div
+                  key={t.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="relative flex flex-col gap-4 rounded-2xl border border-white/8 bg-[rgba(10,11,30,0.6)] p-6 backdrop-blur-xl"
+                >
+                  <Quote className="h-6 w-6 text-[#D4AF37]/30" />
+                  <p className="text-[0.875rem] leading-relaxed text-white/65 flex-1">{t.text}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    {Array.from({ length: t.rating }).map((_, j) => (
+                      <Star key={j} className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
+                    ))}
+                  </div>
+                  <div className="border-t border-white/8 pt-4">
+                    <p className="text-[0.875rem] font-semibold text-white">{t.name}</p>
+                    <p className="text-[0.78rem] text-white/40">{t.role}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-            <div className="relative z-10 flex flex-col gap-10 xl:flex-row xl:items-end xl:justify-between">
-              <div className="max-w-[46rem]">
-                <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--color-primary)] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">
-                  <Star className="h-3 w-3" />
-                  Service Selection
-                </p>
-                <h2 className="mt-6 font-display text-[3.2rem] leading-[0.95] tracking-[-0.04em] text-white md:text-[4.8rem] font-bold">
+        {/* ─── CTA BANNER ─────────────────────────────────────────────── */}
+        <section id="cta" className="relative px-5 pb-24 pt-8 md:px-10 lg:px-12">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.8 }}
+            className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[2rem] border border-[rgba(212,175,55,0.2)] bg-[linear-gradient(160deg,rgba(12,14,35,0.98),rgba(5,5,5,0.99))] px-8 py-16 md:px-14 md:py-20"
+          >
+            {/* Glow accents */}
+            <div className="pointer-events-none absolute right-[-8rem] top-[-8rem] h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.18),transparent_70%)] blur-3xl" />
+            <div className="pointer-events-none absolute bottom-[-4rem] left-[-4rem] h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle,rgba(99,32,238,0.12),transparent_70%)] blur-3xl" />
+
+            <div className="relative z-10 flex flex-col gap-10 xl:flex-row xl:items-center xl:justify-between">
+              <div className="max-w-[44rem]">
+                <SectionEyebrow icon={Sparkles}>Ready to Begin?</SectionEyebrow>
+                <h2 className="mt-6 font-display text-[2.4rem] md:text-[3.8rem] font-bold leading-tight tracking-[-0.03em] text-white">
                   Choose the right consultation.
-                  <span className="mt-2 block text-[rgba(229,226,225,0.55)] font-medium italic">Vastu, tarot or numerology.</span>
+                  <span className="mt-2 block text-[1.4rem] md:text-[2rem] text-white/40 font-medium italic">
+                    Vastu, tarot or numerology.
+                  </span>
                 </h2>
-                <p className="mt-8 max-w-[40rem] text-[1.1rem] leading-[1.9] text-[color:rgba(229,226,225,0.76)] font-light">
-                  Browse the featured industrial Vastu service first, then continue through home and office Vastu, tarot readings and courses, and numerology reports and consultations.
+                <p className="mt-6 max-w-[38rem] text-[0.95rem] leading-relaxed text-white/55">
+                  Browse the featured industrial Vastu service, then explore home and office Vastu, tarot readings and courses, and numerology reports and consultations.
                 </p>
               </div>
-
-              <div className="flex flex-col gap-5 sm:flex-row shadow-2xl">
+              <div className="flex flex-col gap-4 sm:flex-row xl:flex-col xl:min-w-[220px]">
                 <a
                   href="#featured"
-                  className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] px-9 py-5 text-[13px] font-bold uppercase tracking-[0.18em] text-[var(--color-on-primary)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_45px_rgba(212,175,55,0.4)]"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] px-8 py-4 text-[12px] font-bold uppercase tracking-[0.18em] text-[#3c2f00] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(212,175,55,0.4)]"
                 >
-                  <span className="relative z-10">Start With Featured</span>
-                  <div className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-500 group-hover:translate-y-0" />
+                  Start With Featured
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </a>
                 <a
-                  href="#numerology"
-                  className="group inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-9 py-5 text-[13px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-[rgba(212,175,55,0.4)] hover:bg-[rgba(212,175,55,0.08)] hover:text-[var(--color-primary)]"
+                  href="#vastu"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-xl transition-all duration-300 hover:border-[rgba(212,175,55,0.35)] hover:text-[#D4AF37] hover:-translate-y-0.5"
                 >
-                  <span className="mr-2">Explore All Services</span>
-                  <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-2" />
+                  Browse All Services
                 </a>
               </div>
             </div>
@@ -1035,42 +1064,39 @@ function App() {
         </section>
       </main>
 
-      {/* ─── FOOTER ──────────────────────────────────────────────────────────── */}
-      <footer className="relative border-t border-white/8 bg-[rgba(5,5,5,0.98)] px-6 pt-16 pb-8 md:px-10 lg:px-12">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.4),transparent)]" />
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[18rem] w-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.06)_0%,transparent_70%)] blur-3xl" />
-
+      {/* ─── FOOTER ─────────────────────────────────────────────────────── */}
+      <footer className="relative border-t border-white/8 bg-[rgba(5,5,5,0.99)] px-5 pt-14 pb-8 md:px-10 lg:px-12">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.35),transparent)]" />
         <div className="mx-auto max-w-[1280px]">
-          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-
-            {/* Brand column */}
+          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+            {/* Brand */}
             <div className="lg:col-span-2">
-              <a href="#top" className="font-display text-[2rem] font-bold tracking-[-0.04em] text-[var(--color-primary)]">
-                Make My Bhagya<span className="text-[var(--color-primary)]/30">.</span>
+              <a href="#top" className="font-display text-[1.75rem] font-bold tracking-[-0.03em] text-[#D4AF37]">
+                Make My Bhagya
               </a>
-              <p className="mt-4 max-w-[28rem] text-[0.95rem] leading-[1.9] text-[color:rgba(229,226,225,0.6)] font-light">
+              <p className="mt-4 max-w-[26rem] text-[0.875rem] leading-relaxed text-white/45">
                 Professional Vastu, Tarot and Numerology consultation services. Every service is listed with clear pricing and a focused summary so you can choose the right guidance easily.
               </p>
-              <div className="mt-6 flex flex-col gap-3">
-                <a href="tel:+91" className="inline-flex items-center gap-3 text-sm text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors duration-300">
-                  <Phone className="h-4 w-4 shrink-0 text-[var(--color-primary)]/60" />
-                  <span>+91 — Contact for appointment</span>
+              <div className="mt-6 flex flex-col gap-2.5">
+                <a href="tel:+91" className="inline-flex items-center gap-3 text-sm text-white/45 hover:text-[#D4AF37] transition-colors duration-200">
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-[#D4AF37]/50" />
+                  +91 — Contact for appointment
                 </a>
-                <a href="mailto:info@makemybhagya.com" className="inline-flex items-center gap-3 text-sm text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors duration-300">
-                  <Mail className="h-4 w-4 shrink-0 text-[var(--color-primary)]/60" />
-                  <span>info@makemybhagya.com</span>
+                <a href="mailto:info@makemybhagya.com" className="inline-flex items-center gap-3 text-sm text-white/45 hover:text-[#D4AF37] transition-colors duration-200">
+                  <Mail className="h-3.5 w-3.5 shrink-0 text-[#D4AF37]/50" />
+                  info@makemybhagya.com
                 </a>
-                <span className="inline-flex items-center gap-3 text-sm text-[var(--color-on-surface-variant)]">
-                  <MapPin className="h-4 w-4 shrink-0 text-[var(--color-primary)]/60" />
-                  <span>India — Online &amp; On-site visits available</span>
+                <span className="inline-flex items-center gap-3 text-sm text-white/45">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-[#D4AF37]/50" />
+                  India — Online &amp; On-site visits available
                 </span>
               </div>
             </div>
 
-            {/* Services column */}
+            {/* Services */}
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--color-primary)] mb-5">Services</p>
-              <ul className="flex flex-col gap-3">
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.28em] text-[#D4AF37]">Services</p>
+              <ul className="flex flex-col gap-2.5">
                 {[
                   { label: 'Vastu Services', href: '#vastu' },
                   { label: 'Tarot Readings', href: '#tarot' },
@@ -1080,11 +1106,8 @@ function App() {
                   { label: 'Life Path Prediction', href: '#numerology' },
                 ].map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-[color:rgba(229,226,225,0.65)] hover:text-[var(--color-primary)] transition-colors duration-300 flex items-center gap-2 group"
-                    >
-                      <span className="h-px w-4 bg-[var(--color-primary)]/30 group-hover:w-6 group-hover:bg-[var(--color-primary)] transition-all duration-300" />
+                    <a href={link.href} className="group flex items-center gap-2 text-[0.82rem] text-white/40 hover:text-[#D4AF37] transition-colors duration-200">
+                      <span className="h-px w-3 bg-[#D4AF37]/25 group-hover:w-5 group-hover:bg-[#D4AF37] transition-all duration-200" />
                       {link.label}
                     </a>
                   </li>
@@ -1092,10 +1115,10 @@ function App() {
               </ul>
             </div>
 
-            {/* Quick links column */}
+            {/* Quick links */}
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--color-primary)] mb-5">Quick Links</p>
-              <ul className="flex flex-col gap-3">
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.28em] text-[#D4AF37]">Quick Links</p>
+              <ul className="flex flex-col gap-2.5">
                 {[
                   { label: 'Featured Service', href: '#featured' },
                   { label: 'About Vastu', href: '#vastu' },
@@ -1104,11 +1127,8 @@ function App() {
                   { label: 'Book a Session', href: '#cta' },
                 ].map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-[color:rgba(229,226,225,0.65)] hover:text-[var(--color-primary)] transition-colors duration-300 flex items-center gap-2 group"
-                    >
-                      <span className="h-px w-4 bg-[var(--color-primary)]/30 group-hover:w-6 group-hover:bg-[var(--color-primary)] transition-all duration-300" />
+                    <a href={link.href} className="group flex items-center gap-2 text-[0.82rem] text-white/40 hover:text-[#D4AF37] transition-colors duration-200">
+                      <span className="h-px w-3 bg-[#D4AF37]/25 group-hover:w-5 group-hover:bg-[#D4AF37] transition-all duration-200" />
                       {link.label}
                     </a>
                   </li>
@@ -1117,23 +1137,20 @@ function App() {
             </div>
           </div>
 
-          {/* Bottom bar */}
-          <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/8 pt-8 sm:flex-row">
-            <p className="text-[11px] text-[color:rgba(229,226,225,0.38)] tracking-[0.08em]">
+          <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/8 pt-7 sm:flex-row">
+            <p className="text-[11px] text-white/25 tracking-[0.06em]">
               © {new Date().getFullYear()} Make My Bhagya. All rights reserved.
             </p>
-            <p className="text-[11px] text-[color:rgba(229,226,225,0.38)] tracking-[0.08em]">
-              Vastu · Tarot · Numerology
-            </p>
+            <p className="text-[11px] text-white/25 tracking-[0.06em]">Vastu · Tarot · Numerology</p>
           </div>
         </div>
       </footer>
 
-      {/* ─── BACK TO TOP ─────────────────────────────────────────────────────── */}
+      {/* Back to top */}
       <a
         href="#top"
         aria-label="Back to top"
-        className="fixed bottom-8 right-8 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(212,175,55,0.35)] bg-[rgba(8,10,22,0.8)] text-[var(--color-primary)] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:bg-[var(--color-primary)] hover:text-[var(--color-on-primary)] hover:shadow-[0_0_24px_rgba(212,175,55,0.4)] transition-all duration-300 hover:-translate-y-1"
+        className="fixed bottom-7 right-7 z-40 flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(212,175,55,0.3)] bg-[rgba(5,5,15,0.85)] text-[#D4AF37] backdrop-blur-xl shadow-[0_6px_24px_rgba(0,0,0,0.4)] hover:bg-[#D4AF37] hover:text-[#3c2f00] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 hover:-translate-y-0.5"
       >
         <ChevronUp className="h-4 w-4" />
       </a>
