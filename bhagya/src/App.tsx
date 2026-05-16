@@ -542,11 +542,12 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
                     <div>
                       <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Gender</label>
                       <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
-                        className="w-full rounded-xl border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-white outline-none focus:border-[rgba(212,175,55,0.5)] cursor-pointer appearance-none">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
+                        className="w-full rounded-xl border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-white outline-none focus:border-[rgba(212,175,55,0.5)] cursor-pointer appearance-none"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}>
+                        <option value="Male" style={{ background: '#0e0f23', color: '#fff' }}>Male</option>
+                        <option value="Female" style={{ background: '#0e0f23', color: '#fff' }}>Female</option>
+                        <option value="Other" style={{ background: '#0e0f23', color: '#fff' }}>Other</option>
+                        <option value="Prefer not to say" style={{ background: '#0e0f23', color: '#fff' }}>Prefer not to say</option>
                       </select>
                     </div>
                     <div>
