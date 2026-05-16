@@ -9,6 +9,7 @@ type Service = {
   summary: string
   bullets: string[]
   badge: string
+  image?: string
 }
 
 const navigation = ['Featured', 'Vastu', 'Tarot', 'Numerology']
@@ -34,6 +35,7 @@ const featuredService: Service = {
   title: 'Construction / Factory / Land Vastu Visit',
   price: '₹11000',
   badge: 'Featured Industrial Vastu',
+  image: '/industry.png',
   summary:
     'A complete on-site Vastu audit for factories, land, construction zones, and industrial workflows with practical directional guidance.',
   bullets: [
@@ -313,8 +315,242 @@ function SectionEyebrow({ children }: { children: string }) {
   )
 }
 
-function ServiceCard({ service, featured = false }: { service: Service; featured?: boolean }) {
+/* ─── Booking Modal ──────────────────────────────────────────────────────── */
+function BookingModal({ service, onClose }: { service: Service; onClose: () => void }) {
+  const [form, setForm] = useState({ name: '', dob: '', email: '', phone: '', gender: 'Male', profession: '' })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const validate = () => {
+    const e: Record<string, string> = {}
+    if (!form.name.trim()) e.name = 'Full name is required'
+    if (!form.dob) e.dob = 'Date of birth is required'
+    if (!form.email.trim()) e.email = 'Email is required'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email'
+    if (!form.phone.trim()) e.phone = 'Phone number is required'
+    else if (!/^\d{10}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid 10-digit number'
+    return e
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const e2 = validate()
+    if (Object.keys(e2).length) { setErrors(e2); return }
+    // TODO: wire up payment / booking API
+    alert(`Booking confirmed for ${form.name}! We'll contact you shortly.`)
+    onClose()
+  }
+
+  // close on backdrop click
+  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) onClose()
+  }
+
+  // close on Escape
+  useState(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  })
+
+  const inputClass = (field: string) =>
+    `w-full rounded-xl border bg-[rgba(5,5,5,0.6)] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-all duration-300 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.18)] ${
+      errors[field]
+        ? 'border-red-500/60 focus:border-red-400'
+        : 'border-white/10 focus:border-[rgba(212,175,55,0.6)]'
+    }`
+
   return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+        onClick={handleBackdrop}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className="relative w-full max-w-[820px] max-h-[90vh] overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0d0e1f] shadow-[0_40px_120px_rgba(0,0,0,0.8)] flex flex-col md:flex-row"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Book ${service.title}`}
+        >
+          {/* ── Left panel: service details ── */}
+          <div className="relative flex flex-col gap-5 bg-[rgba(10,11,30,0.95)] p-7 md:w-[42%] md:rounded-l-[2rem] md:rounded-r-none rounded-t-[2rem] md:rounded-t-[2rem]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(99,32,238,0.12),transparent_60%)] rounded-[inherit] pointer-events-none" />
+
+            <div className="relative z-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#D4AF37]">{service.badge}</p>
+              <h2 className="mt-3 font-display text-[1.6rem] leading-tight text-white font-bold">{service.title}</h2>
+            </div>
+
+            {/* service image — only when the service has one */}
+            {service.image && (
+              <div className="relative z-10 overflow-hidden rounded-xl">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="h-[11rem] w-full object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0e1f]/80 to-transparent" />
+              </div>
+            )}
+
+            {/* bullets */}
+            <ul className="relative z-10 flex flex-col gap-2.5">
+              {service.bullets.map((b) => (
+                <li key={b} className="flex items-start gap-2.5 text-[0.82rem] leading-[1.7] text-[rgba(229,226,225,0.75)]">
+                  <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,0.5)]" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+
+            {/* price */}
+            <div className="relative z-10 mt-auto border-t border-white/8 pt-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[rgba(229,226,225,0.45)]">Total Price</p>
+              <p className="mt-1 font-display text-[2rem] font-bold text-[#D4AF37]">{service.price}</p>
+            </div>
+          </div>
+
+          {/* ── Right panel: form ── */}
+          <div className="flex flex-col p-7 md:flex-1 md:p-8">
+            {/* close button */}
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 hover:border-white/25 hover:text-white transition-all duration-200"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+
+            <h3 className="font-display text-[1.5rem] font-bold text-white">Your Details</h3>
+            <p className="mt-1 text-sm text-[rgba(229,226,225,0.5)]">Fill in your details to book this service.</p>
+
+            <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-4">
+              {/* Full Name */}
+              <div>
+                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
+                  Full Name <span className="text-[#D4AF37]">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  className={inputClass('name')}
+                />
+                {errors.name && <p className="mt-1 text-[11px] text-red-400">{errors.name}</p>}
+              </div>
+
+              {/* Date of Birth */}
+              <div>
+                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
+                  Date of Birth <span className="text-[#D4AF37]">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={form.dob}
+                  onChange={e => setForm(f => ({ ...f, dob: e.target.value }))}
+                  className={inputClass('dob')}
+                />
+                {errors.dob && <p className="mt-1 text-[11px] text-red-400">{errors.dob}</p>}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
+                  Email <span className="text-[#D4AF37]">*</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="example@gmail.com"
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  className={inputClass('email')}
+                />
+                {errors.email && <p className="mt-1 text-[11px] text-red-400">{errors.email}</p>}
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
+                  Phone Number <span className="text-[#D4AF37]">*</span>
+                </label>
+                <input
+                  type="tel"
+                  placeholder="10-digit phone number"
+                  value={form.phone}
+                  onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                  className={inputClass('phone')}
+                />
+                {errors.phone && <p className="mt-1 text-[11px] text-red-400">{errors.phone}</p>}
+              </div>
+
+              {/* Gender + Profession row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
+                    Gender
+                  </label>
+                  <select
+                    value={form.gender}
+                    onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
+                    className="w-full rounded-xl border border-white/10 bg-[rgba(5,5,5,0.6)] px-4 py-3 text-sm text-white outline-none transition-all duration-300 focus:border-[rgba(212,175,55,0.6)] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.18)] appearance-none cursor-pointer"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgba(229,226,225,0.6)]">
+                    Profession <span className="text-[rgba(229,226,225,0.3)]">(Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Your profession"
+                    value={form.profession}
+                    onChange={e => setForm(f => ({ ...f, profession: e.target.value }))}
+                    className="w-full rounded-xl border border-white/10 bg-[rgba(5,5,5,0.6)] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-all duration-300 focus:border-[rgba(212,175,55,0.6)] focus:shadow-[0_0_0_3px_rgba(212,175,55,0.18)]"
+                  />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="mt-2 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 rounded-full border border-white/10 bg-white/5 py-3.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/70 hover:border-white/20 hover:text-white transition-all duration-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] py-3.5 text-[12px] font-bold uppercase tracking-[0.16em] text-[#3c2f00] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  Pay {service.price}
+                </button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+function ServiceCard({ service, featured = false }: { service: Service; featured?: boolean }) {
+  const [modalOpen, setModalOpen] = useState(false)
+  return (
+    <>
+      {modalOpen && <BookingModal service={service} onClose={() => setModalOpen(false)} />}
     <motion.article
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -350,7 +586,10 @@ function ServiceCard({ service, featured = false }: { service: Service; featured
           <div className="h-px w-full bg-[linear-gradient(90deg,rgba(255,255,255,0.04),rgba(212,175,55,0.45),rgba(255,255,255,0.04))]" />
           <div className="mt-5 flex items-center justify-between gap-4">
             <p className="text-sm uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">Explore service</p>
-            <button className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--color-on-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_26px_rgba(212,175,55,0.22)]">
+            <button
+              onClick={() => setModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50_0%,#d4af37_100%)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--color-on-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_26px_rgba(212,175,55,0.22)]"
+            >
               Explore
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
@@ -358,6 +597,7 @@ function ServiceCard({ service, featured = false }: { service: Service; featured
         </div>
       </div>
     </motion.article>
+    </>
   )
 }
 
