@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import {
   Star, Sparkles, Clock, Compass, Moon, Map as MapIcon,
   ArrowRight, Menu, X, Phone, Mail, MapPin, ChevronUp,
@@ -376,6 +377,7 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
+    setErrors({})
     setSubmitted(true)
   }
 
@@ -384,7 +386,7 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
       errors[field] ? 'border-red-500/50 focus:border-red-400' : 'border-white/10 focus:border-[rgba(212,175,55,0.5)]'
     }`
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -471,35 +473,72 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
                     <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
                       Full Name <span className="text-[#D4AF37]">*</span>
                     </label>
-                    <input type="text" placeholder="Your full name" value={form.name}
-                      onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inputCls('name')} />
+                    <input
+                      type="text"
+                      placeholder="Your full name"
+                      value={form.name}
+                      onChange={e => {
+                        const value = e.target.value
+                        setForm(f => ({ ...f, name: value }))
+                        if (errors.name) setErrors(prev => ({ ...prev, name: '' }))
+                      }}
+                      className={inputCls('name')}
+                    />
                     {errors.name && <p className="mt-1 text-[11px] text-red-400">{errors.name}</p>}
                   </div>
                   <div>
                     <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
                       Date of Birth <span className="text-[#D4AF37]">*</span>
                     </label>
-                    <input type="date" value={form.dob}
-                      onChange={e => setForm(f => ({ ...f, dob: e.target.value }))} className={inputCls('dob')} />
+                    <input
+                      type="date"
+                      value={form.dob}
+                      onChange={e => {
+                        const value = e.target.value
+                        setForm(f => ({ ...f, dob: value }))
+                        if (errors.dob) setErrors(prev => ({ ...prev, dob: '' }))
+                      }}
+                      className={inputCls('dob')}
+                    />
                     {errors.dob && <p className="mt-1 text-[11px] text-red-400">{errors.dob}</p>}
                   </div>
                   <div>
                     <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
                       Email <span className="text-[#D4AF37]">*</span>
                     </label>
-                    <input type="email" placeholder="you@example.com" value={form.email}
-                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className={inputCls('email')} />
+                    <input
+                      type="email"
+                      placeholder="you@example.com"
+                      value={form.email}
+                      onChange={e => {
+                        const value = e.target.value
+                        setForm(f => ({ ...f, email: value }))
+                        if (errors.email) setErrors(prev => ({ ...prev, email: '' }))
+                      }}
+                      className={inputCls('email')}
+                    />
                     {errors.email && <p className="mt-1 text-[11px] text-red-400">{errors.email}</p>}
                   </div>
                   <div>
                     <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
                       Phone <span className="text-[#D4AF37]">*</span>
                     </label>
-                    <input type="tel" placeholder="10-digit number" value={form.phone}
-                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className={inputCls('phone')} />
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      maxLength={10}
+                      placeholder="10-digit number"
+                      value={form.phone}
+                      onChange={e => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 10)
+                        setForm(f => ({ ...f, phone: value }))
+                        if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }))
+                      }}
+                      className={inputCls('phone')}
+                    />
                     {errors.phone && <p className="mt-1 text-[11px] text-red-400">{errors.phone}</p>}
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Gender</label>
                       <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
@@ -519,7 +558,7 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
                         className="w-full rounded-xl border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[rgba(212,175,55,0.5)] transition-all duration-200" />
                     </div>
                   </div>
-                  <div className="mt-1 flex gap-3">
+                  <div className="mt-1 flex flex-col gap-3 sm:flex-row">
                     <button type="button" onClick={onClose}
                       className="flex-1 rounded-full border border-white/10 bg-white/5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60 hover:text-white hover:border-white/20 transition-all duration-200">
                       Cancel
@@ -536,112 +575,181 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
         </motion.div>
       </motion.div>
     </AnimatePresence>
+    ,
+    document.body
   )
 }
 
 /* ─── Service Card ──────────────────────────────────────────────────────── */
-function ServiceCard({ service, featured = false }: { service: Service; featured?: boolean }) {
+/* ─── Service Card ──────────────────────────────────────────────────────── */
+// Fixed size: w-80 (320px) × h-[380px] — consistent across all cards
+function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0 }: {
+  service: Service
+  accentColor?: string
+  index?: number
+}) {
   const [modalOpen, setModalOpen] = useState(false)
+
   return (
     <>
       {modalOpen && <BookingModal service={service} onClose={() => setModalOpen(false)} />}
-      <motion.article
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.55, ease: 'easeOut' }}
-        className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/8 bg-[rgba(10,11,30,0.7)] backdrop-blur-xl transition-all duration-400 hover:-translate-y-1 hover:border-[rgba(212,175,55,0.22)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)] ${featured ? 'p-6 md:p-7' : 'p-5 md:p-6'}`}
-      >
-        {/* hover glow */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.08),transparent_50%)] opacity-0 transition-opacity duration-400 group-hover:opacity-100" />
 
-        <div className="relative z-10 flex flex-col h-full gap-4">
-          {/* Header row */}
+      <article className="group relative flex w-80 shrink-0 flex-col overflow-hidden rounded-[1.25rem] border border-white/[0.07] h-[380px] transition-all duration-350 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.3)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
+        style={{ background: 'linear-gradient(160deg, rgba(14,15,35,0.95) 0%, rgba(8,9,22,0.98) 100%)' }}
+      >
+        {/* Ambient corner glow — always subtle, brighter on hover */}
+        <div
+          className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full blur-2xl transition-opacity duration-350 opacity-20 group-hover:opacity-50"
+          style={{ background: accentColor }}
+        />
+
+        {/* Top shimmer line */}
+        <div
+          className="absolute inset-x-0 top-0 h-px transition-opacity duration-350 opacity-0 group-hover:opacity-100"
+          style={{ background: `linear-gradient(90deg, transparent 0%, ${accentColor} 50%, transparent 100%)` }}
+        />
+
+        <div className="relative z-10 flex flex-col h-full p-6">
+
+          {/* ── Top row: badge left, price right ── */}
           <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <span className="inline-block rounded-full bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.18)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-[#D4AF37]">
-                {service.badge}
-              </span>
-              <h3 className={`mt-3 font-display font-bold leading-snug text-white ${featured ? 'text-[1.5rem] md:text-[1.75rem]' : 'text-[1.2rem] md:text-[1.35rem]'}`}>
-                {service.title}
-              </h3>
-            </div>
-            <div className="shrink-0 rounded-xl border border-[rgba(212,175,55,0.2)] bg-[rgba(212,175,55,0.08)] px-3 py-2 text-center">
-              <p className="font-display text-[1rem] font-bold text-[#D4AF37] leading-none">{service.price}</p>
+            <span
+              className="inline-flex items-center rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] leading-none"
+              style={{
+                background: `${accentColor}22`,
+                border: `1px solid ${accentColor}55`,
+                color: '#D4AF37',
+              }}
+            >
+              {service.badge}
+            </span>
+            <div className="text-right shrink-0">
+              <p className="font-display text-[1.25rem] font-bold leading-none text-[#D4AF37]">{service.price}</p>
             </div>
           </div>
 
-          {/* Summary */}
-          <p className="text-[0.875rem] leading-relaxed text-white/60">{service.summary}</p>
+          {/* ── Title ── */}
+          <h3 className="mt-4 font-display text-[1.05rem] font-bold leading-[1.35] text-white line-clamp-2">
+            {service.title}
+          </h3>
 
-          {/* Bullets */}
-          <ul className="flex flex-col gap-2">
-            {service.bullets.map((bullet) => (
-              <li key={bullet} className="flex items-start gap-2.5 text-[0.82rem] leading-relaxed text-white/70">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]/60 shadow-[0_0_6px_rgba(212,175,55,0.4)]" />
-                {bullet}
+          {/* ── Thin gold rule ── */}
+          <div className="my-3.5 h-px shrink-0" style={{ background: `linear-gradient(90deg, ${accentColor}60, transparent)` }} />
+
+          {/* ── Summary ── */}
+          <p className="text-[0.775rem] leading-[1.65] text-white/45 line-clamp-2 shrink-0">{service.summary}</p>
+
+          {/* ── Bullets ── */}
+          <ul className="mt-3 flex flex-col gap-2 flex-1 overflow-hidden">
+            {service.bullets.slice(0, 3).map((bullet) => (
+              <li key={bullet} className="flex items-start gap-2.5 text-[0.75rem] leading-snug text-white/55">
+                <span
+                  className="mt-[4px] h-[5px] w-[5px] shrink-0 rounded-full"
+                  style={{ background: accentColor, boxShadow: `0 0 6px ${accentColor}` }}
+                />
+                <span className="line-clamp-1">{bullet}</span>
               </li>
             ))}
           </ul>
 
-          {/* Footer */}
-          <div className="mt-auto pt-4 border-t border-white/6">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="group/btn inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.2)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#D4AF37] transition-all duration-300 hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:text-[#3c2f00] hover:border-transparent hover:shadow-[0_0_20px_rgba(212,175,55,0.25)]"
-            >
-              Book This Service
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5" />
-            </button>
-          </div>
+          {/* ── CTA ── */}
+          <button
+            onClick={() => setModalOpen(true)}
+            className="mt-4 shrink-0 group/btn relative overflow-hidden inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-[10.5px] font-bold uppercase tracking-[0.22em] transition-all duration-250"
+            style={{
+              border: `1px solid ${accentColor}44`,
+              background: `${accentColor}12`,
+              color: '#D4AF37',
+            }}
+            onMouseEnter={e => {
+              const el = e.currentTarget
+              el.style.background = 'linear-gradient(180deg,#f2ca50,#d4af37)'
+              el.style.color = '#3c2f00'
+              el.style.border = '1px solid transparent'
+              el.style.boxShadow = '0 0 20px rgba(212,175,55,0.35)'
+            }}
+            onMouseLeave={e => {
+              const el = e.currentTarget
+              el.style.background = `${accentColor}12`
+              el.style.color = '#D4AF37'
+              el.style.border = `1px solid ${accentColor}44`
+              el.style.boxShadow = ''
+            }}
+          >
+            Book This Service
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
+          </button>
         </div>
-      </motion.article>
+
+        {/* Card index number — subtle watermark bottom-right */}
+        <span className="pointer-events-none absolute bottom-4 right-5 font-display text-[2.5rem] font-bold leading-none text-white/[0.03] select-none">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+      </article>
     </>
   )
 }
 
 /* ─── Service Section ───────────────────────────────────────────────────── */
 function ServiceSection({
-  id, title, copy, services, icon: Icon,
+  id, title, copy, services, icon: Icon, accentColor,
 }: {
-  id: string; title: string; copy: string; services: Service[]; icon: typeof Compass
+  id: string; title: string; copy: string; services: Service[]; icon: typeof Compass; accentColor?: string
 }) {
   return (
-    <section id={id} className="relative px-5 py-20 md:px-10 lg:px-12">
+    <section id={id} className="relative px-5 py-16 md:px-10 lg:px-12">
       <div className="mx-auto max-w-[1280px]">
-        {/* Section header */}
-        <div className="mb-10">
+        {/* Header */}
+        <div className="mb-8">
           <SectionEyebrow icon={Icon}>{title}</SectionEyebrow>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.6 }}
-            className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.55 }}
+            className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"
           >
-            <h2 className="font-display text-[2.2rem] md:text-[3rem] font-bold leading-tight tracking-[-0.03em] text-white max-w-[28rem]">
+            <h2 className="font-display text-[2rem] md:text-[2.6rem] font-bold leading-tight tracking-[-0.03em] text-white max-w-[26rem]">
               {title}
             </h2>
-            <p className="max-w-[34rem] text-[0.95rem] leading-relaxed text-white/55 lg:text-right">{copy}</p>
+            <p className="max-w-[32rem] text-[0.875rem] leading-relaxed text-white/45 lg:text-right">{copy}</p>
           </motion.div>
-          <div className="mt-6 h-px bg-[linear-gradient(90deg,rgba(212,175,55,0.3),transparent)]" />
+          <div className="mt-5 h-px bg-[linear-gradient(90deg,rgba(212,175,55,0.25),transparent)]" />
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {services.map((service, i) => (
             <motion.div
               key={service.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.5, delay: i * 0.07 }}
+              viewport={{ once: true, margin: '-20px' }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              className="w-full max-w-80"
             >
-              <ServiceCard service={service} />
+              <ServiceCard service={service} accentColor={accentColor} index={i} />
             </motion.div>
           ))}
         </div>
       </div>
     </section>
+  )
+}
+
+/* ─── Featured Book Button (stateful, used in featured card) ────────────── */
+function FeaturedBookButton({ service }: { service: Service }) {
+  const [modalOpen, setModalOpen] = useState(false)
+  return (
+    <>
+      {modalOpen && <BookingModal service={service} onClose={() => setModalOpen(false)} />}
+      <button
+        onClick={() => setModalOpen(true)}
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(180deg,#f2ca50,#d4af37)] py-3.5 text-[12px] font-bold uppercase tracking-[0.18em] text-[#3c2f00] transition-all duration-200 hover:shadow-[0_0_24px_rgba(212,175,55,0.4)] hover:-translate-y-0.5"
+      >
+        Book Industrial Vastu — {service.price}
+        <ArrowRight className="h-3.5 w-3.5" />
+      </button>
+    </>
   )
 }
 
@@ -657,6 +765,11 @@ function App() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
 
   return (
     <div className="relative overflow-x-hidden bg-[var(--page-base)] text-[var(--color-on-surface)]">
@@ -720,42 +833,83 @@ function App() {
           </div>
         </header>
 
-        {/* Mobile drawer */}
-        <AnimatePresence>
-          {mobileOpen && (
+      </motion.div>
+
+      {/* ─── MOBILE SIDE DRAWER (portal-style, outside navbar wrapper) ── */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Backdrop */}
             <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-              className="mx-auto mt-2 w-full max-w-[1200px] rounded-2xl border border-white/10 bg-[rgba(5,5,15,0.95)] px-5 py-5 backdrop-blur-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.6)] lg:hidden"
+              key="backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden"
+              onClick={() => setMobileOpen(false)}
+            />
+
+            {/* Slide-in panel */}
+            <motion.div
+              key="drawer"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
+              className="fixed right-0 top-0 z-[70] flex h-full w-[min(320px,85vw)] flex-col bg-[rgba(6,7,20,0.98)] border-l border-white/8 shadow-[-24px_0_80px_rgba(0,0,0,0.6)] lg:hidden"
             >
-              <nav className="flex flex-col gap-1">
-                {navigation.map((item) => (
-                  <a
+              {/* Panel header */}
+              <div className="flex items-center justify-between border-b border-white/8 px-6 py-5">
+                <span className="font-display text-[1.1rem] font-bold text-[#D4AF37]">Make My Bhagya</span>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close menu"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/50 hover:border-[rgba(212,175,55,0.35)] hover:text-[#D4AF37] transition-all duration-200"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Nav links — staggered */}
+              <nav className="flex flex-col gap-1 px-4 pt-6">
+                {navigation.map((item, i) => (
+                  <motion.a
                     key={item}
                     href={`#${item.toLowerCase()}`}
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-between rounded-xl px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-white/55 hover:bg-[rgba(212,175,55,0.07)] hover:text-[#D4AF37] transition-all duration-150"
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.28, delay: 0.1 + i * 0.06, ease: 'easeOut' }}
+                    className="group flex items-center justify-between rounded-xl px-4 py-3.5 text-[12px] font-semibold uppercase tracking-[0.22em] text-white/50 hover:bg-[rgba(212,175,55,0.07)] hover:text-[#D4AF37] transition-all duration-150"
                   >
-                    {item}
-                    <ArrowRight className="h-3 w-3 opacity-30" />
-                  </a>
+                    <span>{item}</span>
+                    <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
+                  </motion.a>
                 ))}
               </nav>
-              <div className="mt-4 pt-4 border-t border-white/8">
+
+              {/* Divider + CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.35 }}
+                className="mt-auto border-t border-white/8 px-6 py-6"
+              >
                 <a
                   href="#cta"
                   onClick={() => setMobileOpen(false)}
-                  className="flex w-full items-center justify-center rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] py-3.5 text-[12px] font-bold uppercase tracking-[0.16em] text-[#3c2f00]"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] py-4 text-[12px] font-bold uppercase tracking-[0.18em] text-[#3c2f00] hover:shadow-[0_0_24px_rgba(212,175,55,0.35)] transition-all duration-200"
                 >
                   Book a Session
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </a>
-              </div>
+                <p className="mt-4 text-center text-[10px] text-white/25 tracking-wide">Vastu · Tarot · Numerology</p>
+              </motion.div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <main id="top">
         {/* ─── HERO ───────────────────────────────────────────────────── */}
@@ -940,14 +1094,50 @@ function App() {
                 </div>
               </motion.div>
 
-              {/* Right card */}
+              {/* Right card — featured stays fully open */}
               <motion.div
                 initial={{ opacity: 0, x: 24 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.7, delay: 0.1 }}
+                className="relative overflow-hidden rounded-2xl border border-[rgba(212,175,55,0.28)] bg-[rgba(14,15,32,0.95)] shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
               >
-                <ServiceCard service={featuredService} featured />
+                {/* Gold left bar */}
+                <div className="absolute left-0 top-0 h-full w-[3px] bg-[linear-gradient(180deg,#D4AF37,rgba(212,175,55,0.2))]" />
+
+                <div className="px-6 py-5">
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <span className="inline-flex items-center rounded-full border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-[#D4AF37]">
+                        {featuredService.badge}
+                      </span>
+                      <h3 className="mt-3 font-display text-[1.3rem] md:text-[1.5rem] font-bold leading-snug text-white">
+                        {featuredService.title}
+                      </h3>
+                    </div>
+                    <div className="shrink-0 rounded-xl border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-4 py-2.5 text-center">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35 mb-1">Price</p>
+                      <p className="font-display text-[1.1rem] font-bold text-[#D4AF37] leading-none">{featuredService.price}</p>
+                    </div>
+                  </div>
+
+                  {/* Summary */}
+                  <p className="mt-4 text-[0.875rem] leading-relaxed text-white/55">{featuredService.summary}</p>
+
+                  {/* Bullets 2-col */}
+                  <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
+                    {featuredService.bullets.map((b) => (
+                      <li key={b} className="flex items-start gap-2 text-[0.8rem] leading-relaxed text-white/65">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]/60" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA */}
+                  <FeaturedBookButton service={featuredService} />
+                </div>
               </motion.div>
             </div>
           </div>
@@ -960,6 +1150,7 @@ function App() {
           copy={categoryMeta.vastu.copy}
           services={vastuServices}
           icon={categoryMeta.vastu.icon}
+          accentColor={categoryMeta.vastu.accent}
         />
         <ServiceSection
           id="tarot"
@@ -967,6 +1158,7 @@ function App() {
           copy={categoryMeta.tarot.copy}
           services={tarotServices}
           icon={categoryMeta.tarot.icon}
+          accentColor={categoryMeta.tarot.accent}
         />
         <ServiceSection
           id="numerology"
@@ -974,6 +1166,7 @@ function App() {
           copy={categoryMeta.numerology.copy}
           services={numerologyServices}
           icon={categoryMeta.numerology.icon}
+          accentColor={categoryMeta.numerology.accent}
         />
 
         {/* ─── TESTIMONIALS ───────────────────────────────────────────── */}
