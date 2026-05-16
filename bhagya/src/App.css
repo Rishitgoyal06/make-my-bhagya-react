@@ -1,3 +1,8 @@
+/* ─── Global Interactive Cursor ──────────────────────────────────────────── */
+a, button, select, [role="button"], input[type="submit"], input[type="button"] {
+  cursor: pointer;
+}
+
 /* ─── Keyframe Animations ─────────────────────────────────────────────────── */
 
 @keyframes aurora-drift {
