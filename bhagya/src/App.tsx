@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import {
   Star, Sparkles, Clock, Compass, Moon, Map as MapIcon,
   ArrowRight, Menu, X, Phone, Mail, MapPin, ChevronUp,
-  Shield, Award, Users, CheckCircle2, Quote
+  Shield, Award, Users, CheckCircle2, Quote, Loader2, AlertCircle
 } from 'lucide-react'
 
+// API Integration
+import { apiService } from './services/apiService'
+
 type Service = {
+  id: string
   title: string
   price: string
   summary: string
@@ -60,6 +64,7 @@ const trustPoints = [
 ]
 
 const featuredService: Service = {
+  id: 'industrial-vastu-visit',
   title: 'Construction / Factory / Land Vastu Visit',
   price: '₹11,000',
   badge: 'Industrial Vastu',
@@ -77,6 +82,7 @@ const featuredService: Service = {
 
 const vastuServices: Service[] = [
   {
+    id: 'vastu-doc-home-office',
     title: 'Home Vastu + Office Vastu Document',
     price: '₹1,000',
     badge: 'Vastu Document',
@@ -90,6 +96,7 @@ const vastuServices: Service[] = [
     ],
   },
   {
+    id: 'vastu-visit-office',
     title: 'Office Vastu Visit',
     price: '₹3,500',
     badge: 'On-Site Office',
@@ -103,6 +110,7 @@ const vastuServices: Service[] = [
     ],
   },
   {
+    id: 'vastu-visit-home',
     title: 'Home Vastu Visit',
     price: '₹2,500',
     badge: 'On-Site Home',
@@ -119,6 +127,7 @@ const vastuServices: Service[] = [
 
 const tarotServices: Service[] = [
   {
+    id: 'tarot-course-advanced',
     title: 'Advanced Tarot Card Course',
     price: '₹14,999',
     badge: 'Professional Course',
@@ -132,6 +141,7 @@ const tarotServices: Service[] = [
     ],
   },
   {
+    id: 'tarot-course-basic',
     title: 'Tarot Course — Basic',
     price: '₹5,000',
     badge: 'Beginner Course',
@@ -145,6 +155,7 @@ const tarotServices: Service[] = [
     ],
   },
   {
+    id: 'tarot-reading-advanced',
     title: 'Advanced Tarot Reading',
     price: '₹1,500',
     badge: 'Deep Reading',
@@ -158,6 +169,7 @@ const tarotServices: Service[] = [
     ],
   },
   {
+    id: 'tarot-reading-quick',
     title: 'Tarot Card Reading',
     price: '₹300',
     badge: 'Quick Clarity',
@@ -174,6 +186,7 @@ const tarotServices: Service[] = [
 
 const numerologyServices: Service[] = [
   {
+    id: 'num-fame-rajyog',
     title: 'Fame & Rajyog Numerology',
     price: '₹5,100',
     badge: 'Leadership Energy',
@@ -187,6 +200,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-life-path-grid',
     title: '1-Year, 3-Year & 5-Year Life Path Prediction',
     price: '₹6,100',
     badge: 'Future Cycles',
@@ -200,6 +214,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-financial-abundance',
     title: 'Financial Abundance — Yearly Membership',
     price: '₹1,00,000',
     badge: 'Premium Membership',
@@ -213,6 +228,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-couple-matching',
     title: 'Couple Matching — Numerology Compatibility',
     price: '₹2,400',
     badge: 'Relationship Match',
@@ -226,6 +242,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-car',
     title: 'Car Numerology',
     price: '₹1,100',
     badge: 'Vehicle Energy',
@@ -239,6 +256,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-mobile',
     title: 'Mobile Numerology',
     price: '₹1,100',
     badge: 'Daily Energy',
@@ -252,6 +270,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-business-suggestion',
     title: 'Business Suggestion',
     price: '₹11,000',
     badge: 'Brand & Business',
@@ -265,6 +284,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-student-parents',
     title: 'Student + Parents Numerology Report',
     price: '₹2,500',
     badge: 'Family Guidance',
@@ -278,6 +298,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-name',
     title: 'Name Numerology',
     price: '₹1,100',
     badge: 'Identity Alignment',
@@ -291,6 +312,7 @@ const numerologyServices: Service[] = [
     ],
   },
   {
+    id: 'num-personal-consult',
     title: 'Personal Numerology Consultation',
     price: '₹999',
     badge: '1:1 Consultation',
@@ -346,6 +368,7 @@ function SectionEyebrow({ children, icon: Icon }: { children: string; icon?: typ
   )
 }
 
+
 /* ─── Booking Modal ─────────────────────────────────────────────────────── */
 function BookingModal({ service, onClose }: { service: Service; onClose: () => void }) {
   const [form, setForm] = useState({ name: '', dob: '', email: '', phone: '', gender: 'Male', profession: '' })
@@ -373,12 +396,95 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
     return e
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [paymentSuccessData, setPaymentSuccessData] = useState<{ paymentId: string } | null>(null)
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+  }
+
+  const parsePrice = (priceStr: string) => {
+    const numeric = priceStr.replace(/[^\d]/g, '')
+    return parseInt(numeric, 10)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
+    
     setErrors({})
-    setSubmitted(true)
+    setSubmitError(null)
+    setIsSubmitting(true)
+
+    const res = await loadRazorpayScript()
+    if (!res) {
+      alert('Razorpay SDK failed to load. Are you online?')
+      setIsSubmitting(false)
+      return
+    }
+
+    const amountInPaise = parsePrice(service.price) * 100
+
+    const options = {
+      key: 'rzp_live_Ryc6xXe5LfNSoA',
+      amount: amountInPaise,
+      currency: 'INR',
+      name: 'Make My Bhagya',
+      description: `Purchase for ${service.title}`,
+      image: '/logo.png',
+      handler: async function (response: any) {
+        setIsSubmitting(true)
+        try {
+          // Success callback to backend
+          await apiService.verifyPayment({
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            gender: form.gender,
+            dob: form.dob,
+            serviceId: service.id,
+            paymentId: response.razorpay_payment_id,
+            orderId: response.razorpay_order_id,
+            signature: response.razorpay_signature,
+            amount: amountInPaise
+          })
+          setPaymentSuccessData({ paymentId: response.razorpay_payment_id })
+          setSubmitted(true)
+        } catch (err: any) {
+          setSubmitError(err.message || 'Payment confirmation failed. Please contact support.')
+        } finally {
+          setIsSubmitting(false)
+        }
+      },
+      prefill: {
+        name: form.name,
+        email: form.email,
+        contact: form.phone
+      },
+      theme: {
+        color: '#560591'
+      },
+      modal: {
+        ondismiss: function() {
+          setIsSubmitting(false)
+        }
+      }
+    }
+
+    const paymentObject = new (window as any).Razorpay(options)
+    paymentObject.on('payment.failed', function (response: any) {
+      setSubmitError(response.error.description || 'Payment failed.')
+      setIsSubmitting(false)
+    })
+    paymentObject.open()
   }
 
   const inputCls = (field: string) =>
@@ -392,7 +498,7 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
         onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
       >
         <motion.div
@@ -454,8 +560,15 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
                   <CheckCircle2 className="h-8 w-8 text-[#D4AF37]" />
                 </div>
                 <div>
-                  <h3 className="font-display text-xl font-bold text-white">Booking Received!</h3>
-                  <p className="mt-2 text-sm text-white/50">We'll reach out to {form.name || 'you'} shortly to confirm your session.</p>
+                  <h3 className="font-display text-xl font-bold text-white">Payment Successful!</h3>
+                  <p className="mt-2 text-sm text-white/50">Your booking for <b>{service.title}</b> is confirmed.</p>
+                  {paymentSuccessData && (
+                    <div className="mt-4 rounded-lg bg-white/5 p-3 border border-white/10">
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest">Payment ID</p>
+                      <p className="text-xs font-mono text-[#D4AF37] break-all">{paymentSuccessData.paymentId}</p>
+                    </div>
+                  )}
+                  <p className="mt-4 text-[11px] text-white/30 italic">We'll reach out to {form.name} shortly.</p>
                 </div>
                 <button
                   onClick={onClose}
@@ -560,15 +673,28 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
                     </div>
                   </div>
                   <div className="mt-1 flex flex-col gap-3 sm:flex-row">
-                    <button type="button" onClick={onClose}
-                      className="flex-1 rounded-full border border-white/10 bg-white/5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60 hover:text-white hover:border-white/20 transition-all duration-200">
+                    <button type="button" onClick={onClose} disabled={isSubmitting}
+                      className="flex-1 rounded-full border border-white/10 bg-white/5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60 hover:text-white hover:border-white/20 transition-all duration-200 disabled:opacity-50">
                       Cancel
                     </button>
-                    <button type="submit"
-                      className="flex-1 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] py-3.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#3c2f00] hover:shadow-[0_0_28px_rgba(212,175,55,0.4)] hover:-translate-y-0.5 transition-all duration-200">
-                      Book — {service.price}
+                    <button type="submit" disabled={isSubmitting}
+                      className="flex-1 rounded-full bg-[linear-gradient(180deg,#f2ca50,#d4af37)] py-3.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#3c2f00] hover:shadow-[0_0_28px_rgba(212,175,55,0.4)] hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-80 flex items-center justify-center gap-2">
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        `Book — ${service.price}`
+                      )}
                     </button>
                   </div>
+                  {submitError && (
+                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-[11px] text-red-400">
+                      <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                      {submitError}
+                    </div>
+                  )}
                 </form>
               </>
             )}
@@ -785,6 +911,36 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
+  // Dynamic Content State
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  
+  const [vastuData, setVastuData] = useState<Service[]>(vastuServices)
+  const [tarotData, setTarotData] = useState<Service[]>(tarotServices)
+  const [numerologyData, setNumerologyData] = useState<Service[]>(numerologyServices)
+  const [featuredData, setFeaturedData] = useState<Service>(featuredService)
+
+  const fetchData = useCallback(async () => {
+    setErrorMessage(null)
+    try {
+      const [v, t, n, f] = await Promise.all([
+        apiService.fetchServicesByCategory('vastu').catch(() => vastuServices),
+        apiService.fetchServicesByCategory('tarot').catch(() => tarotServices),
+        apiService.fetchServicesByCategory('numerology').catch(() => numerologyServices),
+        apiService.fetchFeaturedService().catch(() => featuredService)
+      ])
+      setVastuData(v)
+      setTarotData(t)
+      setNumerologyData(n)
+      setFeaturedData(f)
+    } catch (err: any) {
+      setErrorMessage("Welcome to Make My Bhagya. Showing latest offline services.")
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -798,6 +954,31 @@ function App() {
 
   return (
     <div className="relative overflow-x-hidden bg-[var(--page-base)] text-[var(--color-on-surface)]">
+      <AnimatePresence mode="wait">
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-[60] w-[90%] max-w-[400px]"
+          >
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[rgba(10,11,30,0.8)] p-4 backdrop-blur-xl shadow-2xl">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <p className="text-[11px] font-medium leading-relaxed text-white/80">
+                {errorMessage}
+              </p>
+              <button onClick={() => setErrorMessage(null)} className="ml-auto text-white/20 hover:text-white transition-colors">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Scroll progress bar */}
       <motion.div
@@ -1130,20 +1311,20 @@ function App() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <span className="inline-flex items-center rounded-full border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-[#D4AF37]">
-                          {featuredService.badge}
+                          {featuredData.badge}
                         </span>
                         <h3 className="mt-3 max-w-[34rem] font-display text-[1.3rem] font-bold leading-snug text-white md:text-[1.5rem]">
-                          {featuredService.title}
+                          {featuredData.title}
                         </h3>
                       </div>
                       <div className="shrink-0 rounded-xl border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-4 py-2.5 text-center">
                         <p className="mb-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35">Price</p>
-                        <p className="font-display text-[1.1rem] font-bold leading-none text-[#D4AF37]">{featuredService.price}</p>
+                        <p className="font-display text-[1.1rem] font-bold leading-none text-[#D4AF37]">{featuredData.price}</p>
                       </div>
                     </div>
 
                     <p className="mt-4 max-w-[44rem] text-[0.9rem] leading-relaxed text-white/55">
-                      {featuredService.summary}
+                      {featuredData.summary}
                     </p>
                   </div>
 
@@ -1152,7 +1333,7 @@ function App() {
                       Included In This Visit
                     </p>
                     <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-                      {featuredService.bullets.map((b) => (
+                      {featuredData.bullets.map((b) => (
                         <li key={b} className="flex items-start gap-2 text-[0.84rem] leading-relaxed text-white/68">
                           <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]/60" />
                           {b}
@@ -1162,7 +1343,7 @@ function App() {
                   </div>
 
                   <div className="mt-5 border-t border-white/8 pt-5">
-                    <FeaturedBookButton service={featuredService} />
+                    <FeaturedBookButton service={featuredData} />
                   </div>
                 </div>
               </motion.div>
@@ -1175,7 +1356,7 @@ function App() {
           id="vastu"
           title={categoryMeta.vastu.title}
           copy={categoryMeta.vastu.copy}
-          services={vastuServices}
+          services={vastuData}
           icon={categoryMeta.vastu.icon}
           accentColor={categoryMeta.vastu.accent}
         />
@@ -1183,7 +1364,7 @@ function App() {
           id="tarot"
           title={categoryMeta.tarot.title}
           copy={categoryMeta.tarot.copy}
-          services={tarotServices}
+          services={tarotData}
           icon={categoryMeta.tarot.icon}
           accentColor={categoryMeta.tarot.accent}
         />
@@ -1191,7 +1372,7 @@ function App() {
           id="numerology"
           title={categoryMeta.numerology.title}
           copy={categoryMeta.numerology.copy}
-          services={numerologyServices}
+          services={numerologyData}
           icon={categoryMeta.numerology.icon}
           accentColor={categoryMeta.numerology.accent}
         />
