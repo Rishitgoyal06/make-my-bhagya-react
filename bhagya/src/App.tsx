@@ -611,7 +611,14 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
 
         <div className="relative z-10 flex flex-col h-full p-6">
 
-          {/* ── Top row: badge left, price right ── */}
+          <div className="mb-3 flex items-end justify-between gap-4">
+            <span className="pointer-events-none select-none font-display text-[1.9rem] font-bold leading-none text-white/[0.07] [text-shadow:0_0_14px_rgba(255,255,255,0.02)]">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <p className="shrink-0 font-display text-[1.25rem] font-bold leading-none text-[#D4AF37]">{service.price}</p>
+          </div>
+
+          {/* ── Badge row ── */}
           <div className="flex items-start justify-between gap-3">
             <span
               className="inline-flex items-center rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] leading-none"
@@ -623,9 +630,6 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
             >
               {service.badge}
             </span>
-            <div className="text-right shrink-0">
-              <p className="font-display text-[1.25rem] font-bold leading-none text-[#D4AF37]">{service.price}</p>
-            </div>
           </div>
 
           {/* ── Title ── */}
@@ -655,38 +659,49 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           {/* ── CTA ── */}
           <button
             onClick={() => setModalOpen(true)}
-            className="mt-4 shrink-0 group/btn relative overflow-hidden inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-[10.5px] font-bold uppercase tracking-[0.22em] transition-all duration-250"
+            className="group/btn mt-4 inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.04] py-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[#D4AF37] transition-all duration-250 hover:-translate-y-0.5 hover:border-transparent hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:text-[#3c2f00] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)]"
             style={{
-              border: `1px solid ${accentColor}44`,
-              background: `${accentColor}12`,
-              color: '#D4AF37',
-            }}
-            onMouseEnter={e => {
-              const el = e.currentTarget
-              el.style.background = 'linear-gradient(180deg,#f2ca50,#d4af37)'
-              el.style.color = '#3c2f00'
-              el.style.border = '1px solid transparent'
-              el.style.boxShadow = '0 0 20px rgba(212,175,55,0.35)'
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget
-              el.style.background = `${accentColor}12`
-              el.style.color = '#D4AF37'
-              el.style.border = `1px solid ${accentColor}44`
-              el.style.boxShadow = ''
+              boxShadow: `inset 0 0 0 1px ${accentColor}`,
             }}
           >
             Book This Service
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
           </button>
         </div>
-
-        {/* Card index number — subtle watermark bottom-right */}
-        <span className="pointer-events-none absolute bottom-4 right-5 font-display text-[2.5rem] font-bold leading-none text-white/[0.03] select-none">
-          {String(index + 1).padStart(2, '0')}
-        </span>
       </article>
     </>
+  )
+}
+
+/* ─── Auto-scroll carousel (used when services.length > 3) ─────────────── */
+function ServiceCarousel({ services, accentColor }: { services: Service[]; accentColor?: string }) {
+  const cardW = 340
+  const totalW = services.length * cardW
+  const pixelsPerSecond = 80
+  const duration = `${Math.max(totalW / pixelsPerSecond, 18)}s`
+
+  return (
+    <div className="relative overflow-hidden py-3">
+      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-[linear-gradient(90deg,#050505,transparent)] md:w-24" />
+      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-[linear-gradient(270deg,#050505,transparent)] md:w-24" />
+
+      <div
+        className="carousel-track flex w-max gap-5"
+        style={{
+          '--carousel-total': `${totalW}px`,
+          '--carousel-duration': duration,
+        } as React.CSSProperties}
+      >
+        {[...services, ...services, ...services].map((service, i) => (
+          <ServiceCard
+            key={`${service.title}-${i}`}
+            service={service}
+            accentColor={accentColor}
+            index={i % services.length}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -696,6 +711,8 @@ function ServiceSection({
 }: {
   id: string; title: string; copy: string; services: Service[]; icon: typeof Compass; accentColor?: string
 }) {
+  const useCarousel = services.length > 3
+
   return (
     <section id={id} className="relative px-5 py-16 md:px-10 lg:px-12">
       <div className="mx-auto max-w-[1280px]">
@@ -717,20 +734,24 @@ function ServiceSection({
           <div className="mt-5 h-px bg-[linear-gradient(90deg,rgba(212,175,55,0.25),transparent)]" />
         </div>
 
-        <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {services.map((service, i) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
-              transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="w-full max-w-80"
-            >
-              <ServiceCard service={service} accentColor={accentColor} index={i} />
-            </motion.div>
-          ))}
-        </div>
+        {useCarousel ? (
+          <ServiceCarousel services={services} accentColor={accentColor} />
+        ) : (
+          <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {services.map((service, i) => (
+              <motion.div
+                key={service.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-20px' }}
+                transition={{ duration: 0.4, delay: i * 0.08 }}
+                className="w-full max-w-80"
+              >
+                <ServiceCard service={service} accentColor={accentColor} index={i} />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )
