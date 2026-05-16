@@ -621,10 +621,8 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           {/* ── Badge row ── */}
           <div className="flex items-start justify-between gap-3">
             <span
-              className="inline-flex items-center rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] leading-none"
+              className="inline-flex items-center text-[9px] font-bold uppercase tracking-[0.26em] leading-none"
               style={{
-                background: `${accentColor}22`,
-                border: `1px solid ${accentColor}55`,
                 color: '#D4AF37',
               }}
             >
