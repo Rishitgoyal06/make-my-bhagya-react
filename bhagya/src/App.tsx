@@ -690,19 +690,35 @@ function App() {
               <div className="service-orbit absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/8" />
               <div className="service-orbit-reverse absolute left-1/2 top-1/2 h-[24rem] w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(212,175,55,0.18)]" />
               <div className="relative rounded-[2rem] border border-[rgba(212,175,55,0.2)] bg-[linear-gradient(160deg,rgba(10,11,30,0.88),rgba(10,11,30,0.58))] p-3 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-[28px]">
-                <div className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03)_26%,rgba(255,255,255,0.01)_100%)]" />
+                <div className="absolute inset-0 rounded-[2rem] bg-[linear-gradient(140deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03)_26%,rgba(255,255,255,0.01)_100%)] pointer-events-none" />
+
+                {/* Image — 20rem gives a strong visual without dwarfing the card content */}
                 <div className="relative overflow-hidden rounded-[1.5rem]">
-                  <img src="/hero_section.png" alt="Featured service backdrop" className="h-[16rem] w-full object-cover" />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.1)_0%,rgba(5,5,5,0.32)_45%,rgba(5,5,5,0.88)_100%)]" />
-                  <div className="absolute left-5 top-5 rounded-full border border-white/12 bg-[rgba(5,5,5,0.45)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--color-on-surface-variant)] backdrop-blur-xl">
-                    Industrial visit
+                  <img
+                    src="/industry.png"
+                    alt="Industrial factory Vastu visit"
+                    className="h-[20rem] w-full object-cover object-center"
+                  />
+                  {/* subtle bottom fade into card */}
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.0)_55%,rgba(5,5,5,0.55)_100%)]" />
+                  {/* top badges */}
+                  <div className="absolute inset-x-5 top-5 flex items-center justify-between">
+                    <div className="rounded-full border border-white/12 bg-[rgba(5,5,5,0.5)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--color-on-surface-variant)] backdrop-blur-xl">
+                      Industrial visit
+                    </div>
+                    <div className="twinkle rounded-full border border-[rgba(212,175,55,0.3)] bg-[rgba(212,175,55,0.15)] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
+                      On-site
+                    </div>
                   </div>
-                  <div className="absolute bottom-5 left-5 right-5 rounded-[1.25rem] border border-white/10 bg-[rgba(5,5,5,0.58)] p-5 backdrop-blur-[18px]">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--color-primary)]">Construction / Factory / Land Vastu</p>
-                    <p className="mt-2 font-display text-[1.8rem] leading-tight text-white">Complete industrial energy mapping and placement guidance.</p>
+                  {/* gold corner accent bottom-right */}
+                  <div className="absolute bottom-5 right-5 flex flex-col items-end gap-1 pointer-events-none">
+                    <div className="h-px w-5 bg-[#D4AF37]/50" />
+                    <div className="h-5 w-px bg-[#D4AF37]/50 self-end" />
                   </div>
                 </div>
-                <div className="relative px-4 pb-4 pt-5 md:px-6 md:pb-6">
+
+                {/* Service card content directly below image */}
+                <div className="relative px-4 pb-4 pt-4 md:px-6 md:pb-6">
                   <ServiceCard service={featuredService} featured />
                 </div>
               </div>
