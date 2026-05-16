@@ -583,10 +583,11 @@ function BookingModal({ service, onClose }: { service: Service; onClose: () => v
 /* ─── Service Card ──────────────────────────────────────────────────────── */
 /* ─── Service Card ──────────────────────────────────────────────────────── */
 // Fixed size: w-80 (320px) × h-[380px] — consistent across all cards
-function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0 }: {
+function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0, fixedHeight = true }: {
   service: Service
   accentColor?: string
   index?: number
+  fixedHeight?: boolean
 }) {
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -594,7 +595,7 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
     <>
       {modalOpen && <BookingModal service={service} onClose={() => setModalOpen(false)} />}
 
-      <article className="group relative flex w-80 shrink-0 flex-col overflow-hidden rounded-[1.25rem] border border-white/[0.07] h-[380px] transition-all duration-350 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.3)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
+      <article className={`group relative flex w-full shrink-0 flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] transition-all duration-350 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.3)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)] ${fixedHeight ? 'h-[380px] max-w-[352px]' : 'h-full min-h-[360px]'}`}
         style={{ background: 'linear-gradient(160deg, rgba(14,15,35,0.95) 0%, rgba(8,9,22,0.98) 100%)' }}
       >
         {/* Ambient corner glow — always subtle, brighter on hover */}
@@ -609,19 +610,21 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           style={{ background: `linear-gradient(90deg, transparent 0%, ${accentColor} 50%, transparent 100%)` }}
         />
 
-        <div className="relative z-10 flex flex-col h-full p-6">
+        <div className="relative z-10 flex h-full flex-col p-5">
 
-          <div className="mb-3 flex items-end justify-between gap-4">
-            <span className="pointer-events-none select-none font-display text-[1.9rem] font-bold leading-none text-white/[0.07] [text-shadow:0_0_14px_rgba(255,255,255,0.02)]">
+          <div className="mb-3 flex items-center justify-between gap-4">
+            <span className="pointer-events-none select-none font-display text-[1.9rem] font-bold leading-none text-white/[0.08] [text-shadow:0_0_16px_rgba(255,255,255,0.02)]">
               {String(index + 1).padStart(2, '0')}
             </span>
-            <p className="shrink-0 font-display text-[1.25rem] font-bold leading-none text-[#D4AF37]">{service.price}</p>
+            <div className="shrink-0 rounded-full border border-[rgba(212,175,55,0.18)] bg-[rgba(212,175,55,0.08)] px-3 py-1.5">
+              <p className="font-display text-[1.15rem] font-bold leading-none text-[#D4AF37]">{service.price}</p>
+            </div>
           </div>
 
           {/* ── Badge row ── */}
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex min-h-[1.5rem] items-start justify-between gap-3">
             <span
-              className="inline-flex items-center text-[9px] font-bold uppercase tracking-[0.26em] leading-none"
+              className="inline-flex items-center rounded-full border border-white/8 bg-white/[0.03] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.24em] leading-none"
               style={{
                 color: '#D4AF37',
               }}
@@ -631,25 +634,25 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           </div>
 
           {/* ── Title ── */}
-          <h3 className="mt-4 font-display text-[1.05rem] font-bold leading-[1.35] text-white line-clamp-2">
+          <h3 className="mt-3 min-h-[2.7rem] font-display text-[1.18rem] font-bold leading-[1.3] text-white line-clamp-2">
             {service.title}
           </h3>
 
           {/* ── Thin gold rule ── */}
-          <div className="my-3.5 h-px shrink-0" style={{ background: `linear-gradient(90deg, ${accentColor}60, transparent)` }} />
+          <div className="my-2 h-px shrink-0" style={{ background: `linear-gradient(90deg, ${accentColor}60, transparent)` }} />
 
           {/* ── Summary ── */}
-          <p className="text-[0.775rem] leading-[1.65] text-white/45 line-clamp-2 shrink-0">{service.summary}</p>
+          <p className="min-h-[2.3rem] text-[0.84rem] leading-[1.55] text-white/48 line-clamp-2 shrink-0">{service.summary}</p>
 
           {/* ── Bullets ── */}
-          <ul className="mt-3 flex flex-col gap-2 flex-1 overflow-hidden">
+          <ul className={`mt-2.5 rounded-[1rem] border border-white/6 bg-[rgba(255,255,255,0.02)] p-3 ${fixedHeight ? 'flex-1 overflow-hidden' : 'flex-1'} flex flex-col gap-2`}>
             {service.bullets.slice(0, 3).map((bullet) => (
-              <li key={bullet} className="flex items-start gap-2.5 text-[0.75rem] leading-snug text-white/55">
+              <li key={bullet} className="flex items-start gap-2.5 text-[0.79rem] leading-snug text-white/58">
                 <span
                   className="mt-[4px] h-[5px] w-[5px] shrink-0 rounded-full"
                   style={{ background: accentColor, boxShadow: `0 0 6px ${accentColor}` }}
                 />
-                <span className="line-clamp-1">{bullet}</span>
+                <span className="line-clamp-2">{bullet}</span>
               </li>
             ))}
           </ul>
@@ -657,7 +660,7 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
           {/* ── CTA ── */}
           <button
             onClick={() => setModalOpen(true)}
-            className="group/btn mt-4 inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.04] py-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[#D4AF37] transition-all duration-250 hover:-translate-y-0.5 hover:border-transparent hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:text-[#3c2f00] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)]"
+            className={`group/btn inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.04] py-2.5 text-[10px] font-bold uppercase tracking-[0.26em] text-[#D4AF37] transition-all duration-250 hover:-translate-y-0.5 hover:border-transparent hover:bg-[linear-gradient(180deg,#f2ca50,#d4af37)] hover:text-[#3c2f00] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] ${fixedHeight ? 'mt-3' : 'mt-4'}`}
             style={{
               boxShadow: `inset 0 0 0 1px ${accentColor}`,
             }}
@@ -673,7 +676,7 @@ function ServiceCard({ service, accentColor = 'rgba(212,175,55,0.18)', index = 0
 
 /* ─── Auto-scroll carousel (used when services.length > 3) ─────────────── */
 function ServiceCarousel({ services, accentColor }: { services: Service[]; accentColor?: string }) {
-  const cardW = 340
+  const cardW = 372
   const totalW = services.length * cardW
   const pixelsPerSecond = 80
   const duration = `${Math.max(totalW / pixelsPerSecond, 18)}s`
@@ -696,6 +699,7 @@ function ServiceCarousel({ services, accentColor }: { services: Service[]; accen
             service={service}
             accentColor={accentColor}
             index={i % services.length}
+            fixedHeight
           />
         ))}
       </div>
@@ -724,10 +728,10 @@ function ServiceSection({
             transition={{ duration: 0.55 }}
             className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"
           >
-            <h2 className="font-display text-[2rem] md:text-[2.6rem] font-bold leading-tight tracking-[-0.03em] text-white max-w-[26rem]">
+            <h2 className="font-display text-[2rem] font-bold leading-tight tracking-[-0.03em] text-white md:text-[2.6rem] max-w-[26rem]">
               {title}
             </h2>
-            <p className="max-w-[32rem] text-[0.875rem] leading-relaxed text-white/45 lg:text-right">{copy}</p>
+            <p className="max-w-[28rem] text-[0.9rem] leading-relaxed text-white/45 lg:text-right">{copy}</p>
           </motion.div>
           <div className="mt-5 h-px bg-[linear-gradient(90deg,rgba(212,175,55,0.25),transparent)]" />
         </div>
@@ -735,7 +739,7 @@ function ServiceSection({
         {useCarousel ? (
           <ServiceCarousel services={services} accentColor={accentColor} />
         ) : (
-          <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 items-stretch justify-items-center gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {services.map((service, i) => (
               <motion.div
                 key={service.title}
@@ -743,9 +747,9 @@ function ServiceSection({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-20px' }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="w-full max-w-80"
+                className="flex h-full w-full max-w-[352px]"
               >
-                <ServiceCard service={service} accentColor={accentColor} index={i} />
+                <ServiceCard service={service} accentColor={accentColor} index={i} fixedHeight={false} />
               </motion.div>
             ))}
           </div>
@@ -945,7 +949,6 @@ function App() {
           <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
             <div className="hero-ring h-[480px] w-[480px] rounded-full border border-white/[0.05] md:h-[660px] md:w-[660px]" />
             <div className="hero-ring-reverse absolute h-[340px] w-[340px] rounded-full border border-[rgba(212,175,55,0.1)] md:h-[480px] md:w-[480px]" />
-            <div className="absolute top-[calc(50%-330px)] left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[#D4AF37] shadow-[0_0_12px_#D4AF37]" />
           </div>
 
           {/* Hero content */}
@@ -956,18 +959,10 @@ function App() {
               variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.12 } } }}
               className="flex flex-col items-center max-w-[780px]"
             >
-              {/* Eyebrow */}
-              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}>
-                <div className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.07)] px-4 py-2">
-                  <Sparkles className="h-3 w-3 text-[#D4AF37]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF37]">Vastu · Tarot · Numerology</span>
-                </div>
-              </motion.div>
-
               {/* Headline */}
               <motion.h1
                 variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8 } } }}
-                className="mt-7 font-display font-bold leading-[1.02] tracking-[-0.04em] text-white"
+                className="font-display font-bold leading-[1.02] tracking-[-0.04em] text-white"
                 style={{ fontSize: 'clamp(2.8rem, 7.5vw, 6.5rem)' }}
               >
                 Guidance for<br />
@@ -1083,32 +1078,35 @@ function App() {
             <div className="mb-10">
               <SectionEyebrow icon={Star}>Featured Service</SectionEyebrow>
             </div>
-            <div className="grid gap-8 xl:grid-cols-[1fr_1.4fr] xl:items-start">
+            <div className="grid gap-8 xl:grid-cols-[1fr_1.4fr] xl:items-stretch">
               {/* Left copy */}
               <motion.div
                 initial={{ opacity: 0, x: -24 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.7 }}
+                className="flex h-full flex-col"
               >
-                <h2 className="font-display text-[2.2rem] md:text-[3.2rem] font-bold leading-tight tracking-[-0.03em] text-white">
-                  Construction, Factory & Land Vastu
-                  <span className="mt-2 block text-[1.4rem] md:text-[1.8rem] text-white/40 font-medium italic">
-                    complete on-site industrial guidance.
-                  </span>
-                </h2>
-                <p className="mt-5 text-[0.95rem] leading-relaxed text-white/55">
-                  The most comprehensive Vastu visit for factories, land and industrial setups — covering layout, flow, energy balance and directional planning.
-                </p>
-                <div className="mt-7 flex flex-wrap gap-2.5">
-                  {['Factory Vastu', 'Land Audit', 'Production Flow', '5 Elements'].map((chip) => (
-                    <span key={chip} className="rounded-full border border-white/10 bg-[rgba(10,11,30,0.6)] px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
-                      {chip}
+                <div>
+                  <h2 className="font-display text-[2.2rem] md:text-[3.2rem] font-bold leading-tight tracking-[-0.03em] text-white">
+                    Construction, Factory & Land Vastu
+                    <span className="mt-2 block text-[1.4rem] md:text-[1.8rem] text-white/40 font-medium italic">
+                      complete on-site industrial guidance.
                     </span>
-                  ))}
+                  </h2>
+                  <p className="mt-5 text-[0.95rem] leading-relaxed text-white/55">
+                    The most comprehensive Vastu visit for factories, land and industrial setups — covering layout, flow, energy balance and directional planning.
+                  </p>
+                  <div className="mt-7 flex flex-wrap gap-2.5">
+                    {['Factory Vastu', 'Land Audit', 'Production Flow', '5 Elements'].map((chip) => (
+                      <span key={chip} className="rounded-full border border-white/10 bg-[rgba(10,11,30,0.6)] px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 {/* Image preview */}
-                <div className="mt-8 overflow-hidden rounded-2xl border border-white/8">
+                <div className="mt-8 overflow-hidden rounded-2xl border border-white/8 xl:mt-auto">
                   <img src="/industry.png" alt="Industrial factory Vastu" className="h-52 w-full object-cover" />
                 </div>
               </motion.div>
@@ -1119,43 +1117,50 @@ function App() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                className="relative overflow-hidden rounded-2xl border border-[rgba(212,175,55,0.28)] bg-[rgba(14,15,32,0.95)] shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+                className="relative overflow-hidden rounded-2xl border border-[rgba(212,175,55,0.28)] bg-[rgba(14,15,32,0.95)] shadow-[0_20px_60px_rgba(0,0,0,0.5)] xl:h-full"
               >
                 {/* Gold left bar */}
                 <div className="absolute left-0 top-0 h-full w-[3px] bg-[linear-gradient(180deg,#D4AF37,rgba(212,175,55,0.2))]" />
 
-                <div className="px-6 py-5">
-                  {/* Header */}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <span className="inline-flex items-center rounded-full border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-[#D4AF37]">
-                        {featuredService.badge}
-                      </span>
-                      <h3 className="mt-3 font-display text-[1.3rem] md:text-[1.5rem] font-bold leading-snug text-white">
-                        {featuredService.title}
-                      </h3>
+                <div className="flex h-full flex-col px-6 py-5">
+                  <div>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <span className="inline-flex items-center rounded-full border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-[#D4AF37]">
+                          {featuredService.badge}
+                        </span>
+                        <h3 className="mt-3 max-w-[34rem] font-display text-[1.3rem] font-bold leading-snug text-white md:text-[1.5rem]">
+                          {featuredService.title}
+                        </h3>
+                      </div>
+                      <div className="shrink-0 rounded-xl border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-4 py-2.5 text-center">
+                        <p className="mb-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35">Price</p>
+                        <p className="font-display text-[1.1rem] font-bold leading-none text-[#D4AF37]">{featuredService.price}</p>
+                      </div>
                     </div>
-                    <div className="shrink-0 rounded-xl border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.1)] px-4 py-2.5 text-center">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35 mb-1">Price</p>
-                      <p className="font-display text-[1.1rem] font-bold text-[#D4AF37] leading-none">{featuredService.price}</p>
-                    </div>
+
+                    <p className="mt-4 max-w-[44rem] text-[0.9rem] leading-relaxed text-white/55">
+                      {featuredService.summary}
+                    </p>
                   </div>
 
-                  {/* Summary */}
-                  <p className="mt-4 text-[0.875rem] leading-relaxed text-white/55">{featuredService.summary}</p>
+                  <div className="mt-6 flex-1 rounded-[1.25rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] p-5">
+                    <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#D4AF37]/80">
+                      Included In This Visit
+                    </p>
+                    <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+                      {featuredService.bullets.map((b) => (
+                        <li key={b} className="flex items-start gap-2 text-[0.84rem] leading-relaxed text-white/68">
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]/60" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                  {/* Bullets 2-col */}
-                  <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
-                    {featuredService.bullets.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-[0.8rem] leading-relaxed text-white/65">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4AF37]/60" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <FeaturedBookButton service={featuredService} />
+                  <div className="mt-5 border-t border-white/8 pt-5">
+                    <FeaturedBookButton service={featuredService} />
+                  </div>
                 </div>
               </motion.div>
             </div>
