@@ -54,6 +54,30 @@ const testimonials = [
     text: 'The tarot reading gave me clarity I had been searching for months. Accurate, insightful and delivered with genuine care.',
     rating: 5,
   },
+  {
+    name: 'Vikram Singh',
+    role: 'Entrepreneur, Delhi',
+    text: 'The industrial Vastu for my warehouse significantly improved the overall operations and peace of mind. Highly professional team.',
+    rating: 5,
+  },
+  {
+    name: 'Sangeeta Rao',
+    role: 'Designer, Bangalore',
+    text: 'Numerology session for my brand name gave me a whole new perspective. A must-visit for every new business owner out there.',
+    rating: 5,
+  },
+  {
+    name: 'Siddharth Gupta',
+    role: 'IT Professional, Gurgaon',
+    text: 'A highly professional approach. The detailed report I received for my new apartment was very comprehensive and easy to follow.',
+    rating: 5,
+  },
+  {
+    name: 'Meera Reddy',
+    role: 'Educator, Hyderabad',
+    text: 'The tarot reading was surprisingly accurate and provided the directional comfort I needed during a tough career transition.',
+    rating: 5,
+  },
 ]
 
 const trustPoints = [
@@ -1004,8 +1028,15 @@ function App() {
             ? 'border-white/12 bg-[rgba(5,5,15,0.85)] shadow-[0_12px_48px_rgba(0,0,0,0.5)]'
             : 'border-white/8 bg-[rgba(5,5,15,0.5)]'
         }`}>
-          <a href="#top" className="font-display text-[1.25rem] font-bold tracking-[-0.03em] text-[#D4AF37]">
-            Make My Bhagya
+          <a href="#top" className="flex items-center gap-3 group">
+            <img 
+              src="/make-my-baghya.jpeg" 
+              alt="Make My Bhagya Logo" 
+              className="h-10 w-auto rounded-lg transition-transform duration-300 group-hover:scale-105" 
+            />
+            <span className="font-display text-[1.25rem] font-bold tracking-[-0.03em] text-[#D4AF37]">
+              Make My Bhagya
+            </span>
           </a>
 
           <nav className="hidden items-center gap-7 lg:flex">
@@ -1068,7 +1099,10 @@ function App() {
             >
               {/* Panel header */}
               <div className="flex items-center justify-between border-b border-white/8 px-6 py-5">
-                <span className="font-display text-[1.1rem] font-bold text-[#D4AF37]">Make My Bhagya</span>
+                <div className="flex items-center gap-3">
+                  <img src="/make-my-baghya.jpeg" alt="" className="h-8 w-8 rounded-md" />
+                  <span className="font-display text-[1.1rem] font-bold text-[#D4AF37]">Make My Bhagya</span>
+                </div>
                 <button
                   onClick={() => setMobileOpen(false)}
                   aria-label="Close menu"
@@ -1392,29 +1426,39 @@ function App() {
                 What clients say
               </motion.h2>
             </div>
-            <div className="grid gap-5 md:grid-cols-3">
-              {testimonials.map((t, i) => (
-                <motion.div
-                  key={t.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="relative flex flex-col gap-4 rounded-2xl border border-white/8 bg-[rgba(10,11,30,0.6)] p-6 backdrop-blur-xl"
-                >
-                  <Quote className="h-6 w-6 text-[#D4AF37]/30" />
-                  <p className="text-[0.875rem] leading-relaxed text-white/65 flex-1">{t.text}</p>
-                  <div className="flex items-center gap-1 mt-1">
-                    {Array.from({ length: t.rating }).map((_, j) => (
-                      <Star key={j} className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
-                    ))}
-                  </div>
-                  <div className="border-t border-white/8 pt-4">
-                    <p className="text-[0.875rem] font-semibold text-white">{t.name}</p>
-                    <p className="text-[0.78rem] text-white/40">{t.role}</p>
-                  </div>
-                </motion.div>
-              ))}
+            {/* Testimonials Carousel */}
+            <div className="relative mt-8 overflow-hidden py-10">
+              <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-[linear-gradient(90deg,#050505,transparent)] md:w-32" />
+              <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-[linear-gradient(270deg,#050505,transparent)] md:w-32" />
+
+              <div
+                className="carousel-track flex w-max gap-6"
+                style={{
+                  '--carousel-total': `${testimonials.length * 380}px`,
+                  '--carousel-duration': '40s',
+                } as React.CSSProperties}
+              >
+                {[...testimonials, ...testimonials, ...testimonials].map((t, i) => (
+                  <motion.div
+                    key={`${t.name}-${i}`}
+                    className="relative flex w-[350px] shrink-0 flex-col gap-5 rounded-3xl border border-white/8 bg-[rgba(10,11,30,0.6)] p-8 backdrop-blur-xl transition-all duration-300 hover:border-[#D4AF37]/30 hover:bg-[rgba(15,16,40,0.8)]"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Quote className="h-8 w-8 text-[#D4AF37]/20" />
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: t.rating }).map((_, j) => (
+                          <Star key={j} className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-[0.95rem] leading-relaxed text-white/70 flex-1 italic font-medium">"{t.text}"</p>
+                    <div className="border-t border-white/8 pt-5">
+                      <p className="text-[1rem] font-bold tracking-tight text-white">{t.name}</p>
+                      <p className="text-[0.75rem] font-semibold uppercase tracking-widest text-[#D4AF37]/60 mt-0.5">{t.role}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -1473,8 +1517,11 @@ function App() {
           <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
             {/* Brand */}
             <div className="lg:col-span-2">
-              <a href="#top" className="font-display text-[1.75rem] font-bold tracking-[-0.03em] text-[#D4AF37]">
-                Make My Bhagya
+              <a href="#top" className="flex items-center gap-3">
+                <img src="/make-my-baghya.jpeg" alt="Logo" className="h-10 w-auto rounded-lg" />
+                <span className="font-display text-[1.75rem] font-bold tracking-[-0.03em] text-[#D4AF37]">
+                  Make My Bhagya
+                </span>
               </a>
               <p className="mt-4 max-w-[26rem] text-[0.875rem] leading-relaxed text-white/45">
                 Professional Vastu, Tarot and Numerology consultation services. Every service is listed with clear pricing and a focused summary so you can choose the right guidance easily.
